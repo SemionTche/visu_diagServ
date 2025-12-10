@@ -60,6 +60,13 @@ class diagServer(threading.Thread):
         To modify the 'data', use 'setData'.
         '''
         return self._data
+    
+    @property
+    def running(self) -> bool:
+        '''
+        property to avoid 'running' modification.
+        '''
+        return self._running
 
     def setData(self, newData: dict) -> None:
         '''
