@@ -2,11 +2,16 @@ import json
 import zmq
 import threading
 import time
+import os
+import configparser
+
+cfg = configparser.ConfigParser()
 
 
 class diagServer(threading.Thread):
     def __init__(self, 
-                 address: str = "tcp://*:5555", 
+                 address: str = "tcp://*:1110",
+                 host: str = "localhost",
                  data: dict | None = None, 
                  name: str = "default"):
         '''
@@ -27,7 +32,10 @@ class diagServer(threading.Thread):
         Args:
             address: (str)
                 the server adress.
-                
+            
+            host: (str)
+                the host adress.
+
             data: (dict)
                 the dictionnary to transmit.
             
@@ -38,6 +46,7 @@ class diagServer(threading.Thread):
         super().__init__() # heritage from Thread
         self._address = address
         self.name = name
+        self._host = host
         self._data = data or {}
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
@@ -54,6 +63,13 @@ class diagServer(threading.Thread):
         return self._address
 
     @property
+    def host(self):
+        '''
+        property to avoid 'host' modification.
+        '''
+        return self._host
+    
+    @property
     def data(self) -> dict:
         '''
         property to avoid 'data' direct modification.
@@ -62,11 +78,26 @@ class diagServer(threading.Thread):
         return self._data
     
     @property
-    def running(self) -> bool:
+    def running(self):
         '''
         property to avoid 'running' modification.
         '''
         return self._running
+
+    @property
+    def addressForClient(self):
+        '''
+        property that return the 'address' for the client.
+        'tcp://<IP server>:port'
+        '''
+        proto, rest = self.address.split("://")
+        host, port = rest.split(":")
+
+        if host == "*":         # if the server is listening everywhere
+            host = self.host    # use the server host refered in the class
+                                # else use the specific adress required by the server
+
+        return f"{proto}://{host}:{port}"
 
     def setData(self, newData: dict) -> None:
         '''
@@ -126,7 +157,8 @@ class diagServer(threading.Thread):
         # create a client ZMQ
         ctx = zmq.Context()
         sock = ctx.socket(zmq.REQ)
-        sock.connect("tcp://localhost:5555")
+        print(self.address)
+        sock.connect(self.addressForClient)
 
         try:
             # try tp send '__STOP__' to the server
@@ -143,9 +175,22 @@ class diagServer(threading.Thread):
 
 
 if __name__ == "__main__":
-    data = {"hello": "world", "x": 42}
+    cfg.read("visu_diagServ/visu/confServer.ini")
+    print(cfg.sections())
 
-    server = diagServer(data=data)
+    print("cwd =", os.getcwd())
+    print("exists:", os.path.exists("visu_diagServ/visu/confServer.ini"))
+
+    host = cfg["diagServer"].get("serverHost")
+    port = cfg["diagServer"].get("serverPort")
+
+    address = f"tcp://*:{port}"
+    data = {"hello": "world", "x": 42}
+    print(f"host = {host}")
+    print(f"port = {port}")
+    print(f"address = {address}")
+
+    server = diagServer(address=address, host=host, data=data)
     server.start()
 
     try:
