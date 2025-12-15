@@ -143,7 +143,7 @@ class diagServer(threading.Thread):
                         self.socket.send_string("diagnostics")
                     
                     elif message == "__PING__":
-                        self.socket.send_string("online")
+                        self.socket.send_string("__PONG__")
 
                 else:
                     time.sleep(0.01) # wait 10 ms
