@@ -80,7 +80,9 @@ class WINENCERCLED(QWidget):
         y, x = np.meshgrid(y, x)
         # self.data = (40*np.random.rand(self.dimx, self.dimy)).round()
         
-        path_focal_spot = "C:/Users/APPLI/Downloads/Focal_spot_laser/TachFocale_0001.TIFF"
+        # path_focal_spot = "C:/Users/APPLI/Downloads/Focal_spot_laser/TachFocale_0001.TIFF"
+        p = pathlib.Path(__file__)
+        path_focal_spot = str(p.parent) + sepa + "tmp_TachFocale_0001.TIFF" # "C:/Users/APPLI/Documents/GitHub/camera_dummyClass/tmp_TachFocale_0001.TIFF"
         im = np.array(Image.open(path_focal_spot)).T
         self.data = im + np.random.randint(0, im.max()/10, im.shape)
         
