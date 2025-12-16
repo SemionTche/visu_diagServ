@@ -21,12 +21,8 @@ import qdarkstyle  # pip install qdakstyle https://github.com/ColinDuquesnoy/QDa
 import os
 
 import pathlib
-from scipy.ndimage import median_filter
-#from winCrop import WINCROP
-from visu.WinCut import GRAPHCUT
-from visu.winMeas import MEAS
-from visu.InputElectrons import InputE
-from visu.CalculTraj import WINTRAJECTOIRE
+
+
 import Deconvolve_Spectrum as Deconvolve
 
 sys.path.insert(1, 'spectrum_analysis')
@@ -42,69 +38,53 @@ class WINSPECTRO(QMainWindow):
         p = pathlib.Path(__file__)
         self.icon = str(p.parent) + sepa + 'icons' + sepa
 
+        self.setup()
 
-
-
-        self.window_setup()
-
-        # Create calibration for spectrum deconvolution _ LHC
+        # Create calibration for spectrum deconvolution
         self.deconv_calib = str(p.parent) + sepa+'spectrum_analysis' + sepa
         self.calibration_data = Deconvolve.CalibrationData(cal_path=self.deconv_calib + 'dsdE_Small_LHC.txt')
-        # Create initialization object for spectrum deconvolution _ LHC
+        # Create initialization object for spectrum deconvolution
         initImage = Deconvolve.spectrum_image(im_path=self.deconv_calib +
                                            'magnet0.4T_Soectrum_isat4.9cm_26bar_gdd25850_HeAr_0002.TIFF',
                                    revert=True)
         self.deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(initImage, self.calibration_data, 0.5,
                                                               20.408, 0.1,
                                                               "zero", (1953, 635))
-        self.setup()
+        self.graph_setup()
 
-    def window_setup(self):
 
+    def setup(self):
         self.isWinOpen = False
         self.setWindowTitle('Electrons spectrometer')
-        self.setWindowIcon(QIcon(self.icon+'LOA.png'))
+        self.setWindowIcon(QIcon(self.icon + 'LOA.png'))
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
         self.setWindowIcon(QIcon('./icons/LOA.png'))
         self.setGeometry(100, 30, 800, 800)
 
         self.toolBar = self.addToolBar('tools')
         self.toolBar.setMovable(False)
-        menubar = self.menuBar()
-#        menubar.setNativeMenuBar(False)
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
 
-        self.fileMenu = menubar.addMenu('&File')
+        self.fileMenu = self.menuBar().addMenu('&File')
 
-    def setup(self):
-
-        self.vbox2 = QVBoxLayout()
+        self.vbox = QVBoxLayout()
         self.winImage = pg.GraphicsLayoutWidget()
-        self.winImage.setContentsMargins(0, 0, 0, 0)
         self.winImage.setAspectLocked(False)
+        self.vbox.addWidget(self.winImage)
 
-        self.winImage.ci.setContentsMargins(0, 0, 0, 0)
-        self.vbox2.addWidget(self.winImage)
-        self.vbox2.setContentsMargins(0, 0, 0, 0)
-        
-        self.p1 = self.winImage.addPlot()
+        self.spectrum_2D_image = self.winImage.addPlot()
         self.imh = pg.ImageItem()
-        self.axeX = self.p1.getAxis('bottom')
-        self.axeY = self.p1.getAxis('left')
-        self.p1.addItem(self.imh)
-        self.p1.setMouseEnabled(x=False, y=False)
-        self.p1.setContentsMargins(20, 20, 20, 20)
-    
 
-        self.p1.showAxis('right', show=False)
-        self.p1.showAxis('top', show=False)
-        self.p1.showAxis('left', show=True)
-    
-        self.axeX = self.p1.getAxis('bottom')
-        self.axeY = self.p1.getAxis('left')
-        self.axeX.setLabel(' Energy (Mev) ')
-        self.axeY.setLabel( ' mrad ')
+    def graph_setup(self):
+
+        self.axeX, self.axeY = (self.spectrum_2D_image.getAxis('bottom'),
+                                self.spectrum_2D_image.getAxis('left'))
+        self.spectrum_2D_image.addItem(self.imh)
+        self.spectrum_2D_image.setContentsMargins(10, 10, 10, 10)
+
+        self.axeX.setLabel(' Energy (MeV) ')
+        self.axeY.setLabel( 'mrad ')
 
         self.imh.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
         self.imh.setRect(
@@ -114,19 +94,14 @@ class WINSPECTRO(QMainWindow):
             self.deconvolved_spectrum.angle[-1] - self.deconvolved_spectrum.angle[0] ) # height
 
         self.winImage2 = pg.GraphicsLayoutWidget()
-        self.winPLOT = self.winImage2.addPlot()
-        self.vbox2.addWidget(self.winImage2)
-        self.pCut = self.winPLOT.plot()
-        self.winPLOT.setLabel('bottom', 'Energy (Mev)')
-        self.winPLOT.showAxis('right', show=False)
-        self.winPLOT.showAxis('top', show=False)
-        self.winPLOT.showAxis('left', show=True)
-        self.winPLOT.showAxis('bottom', show=True)
-        self.axeX = self.winPLOT.getAxis('bottom')
-        self.p1.setAxis=self.axeX
+        self.dnde_image = self.winImage2.addPlot()
+        self.vbox.addWidget(self.winImage2)
+        self.dnde_image.setLabel('bottom', 'Energy')
+        self.dnde_image.setLabel('left', 'dN/dE (pC/MeV)')
+        self.dnde_image.setContentsMargins(10, 10, 10, 10)
 
         MainWidget = QWidget()
-        MainWidget.setLayout(self.vbox2)
+        MainWidget.setLayout(self.vbox)
         self.setCentralWidget(MainWidget)
 
         # histogramvalue()
@@ -139,35 +114,15 @@ class WINSPECTRO(QMainWindow):
             # if signal emit in another thread (see visual)
             self.parent.signalSpectro.connect(self.Display)
 
-    def checkBoxScaleImage(self):
-
-        if self.checkBoxScale.isChecked():
-            self.checkBoxScale.setIcon(QtGui.QIcon(self.icon+"expand.png"))
-            self.checkBoxScale.setText('Auto Scale On')
-        else:
-            self.checkBoxScale.setIcon(QtGui.QIcon(self.icon+"minimize.png"))
-            self.checkBoxScale.setText('Auto Scale Off')
-
     def Display(self, data):
-        self.dataOrg = data
+
+        # Deconvolve and display 2D data
         self.deconvolved_spectrum.deconvolve_data(np.flip(data.T, axis=1))
-        self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
         self.imh.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
 
-
-
-    def SaveF(self):
-        # save as tiff
-        fname = QFileDialog.getSaveFileName(self, "Save data as TIFF", self.path)
-        self.path = os.path.dirname(str(fname[0]))
-        fichier = fname[0]
-        print(fichier, ' is saved')
-        self.conf.setValue(self.name+"/path", self.path)
-        time.sleep(0.1)
-        self.dataS = np.rot90(self.data, 1)
-        img_PIL = Image.fromarray(self.dataS)
-        img_PIL.save(str(fname[0])+'.TIFF', format='TIFF')
-        
+        # Integrate over angle and show graph
+        self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
+        self.dnde_image.plot(self.deconvolved_spectrum.energy, self.deconvolved_spectrum.integrated_spectrum)
 
         
 if __name__ == "__main__":
