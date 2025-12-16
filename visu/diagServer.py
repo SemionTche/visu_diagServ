@@ -110,11 +110,12 @@ class diagServer(threading.Thread):
         Function used while the server is running.
         The server is waiting to receive messages from clients.
         keywords are:
-            '__GET__': transmit the dictionnay
+            '__GET__': transmit the dictionary
             '__STOP__': stop the server
             '__NAME'__: transmit the name attribute
-            '__PING__': answer 'online'
-            '__TYPE__': answer  'diagnostics'
+            '__PING__': answer '__PONG__'
+            '__DEVICE__': answer  'diagnostics'
+            '__FREEDOM__' : degree of freedom. 0 for a camera.
         '''
         print(f"[diagServer {self.name}] Running on {self.address}")
 
@@ -139,11 +140,17 @@ class diagServer(threading.Thread):
                     elif message == "__NAME__":
                         self.socket.send_string(self.name)
                     
-                    elif message == "__TYPE__":
-                        self.socket.send_string("diagnostics")
+                    elif message == "__DEVICE__":
+                        self.socket.send_string("__CAMERA__")
+                    
+                    elif message == "__FREEDOM__":
+                        self.socket.send_string("0")
                     
                     elif message == "__PING__":
                         self.socket.send_string("__PONG__")
+                    
+                    else :
+                        self.socket.send_string("unable to understand the demande")
 
                 else:
                     time.sleep(0.01) # wait 10 ms
@@ -173,7 +180,7 @@ class diagServer(threading.Thread):
         sock.connect(self.addressForClient)
 
         try:
-            # try tp send '__STOP__' to the server
+            # try to send '__STOP__' to the server
             sock.send_string("__STOP__")
             sock.recv_string()  # response is mandatory in REP
         except Exception as e:
@@ -202,7 +209,7 @@ if __name__ == "__main__":
     print(f"port = {port}")
     print(f"address = {address}")
 
-    server = diagServer(address=address, host=host, data=data)
+    server = diagServer(address=address, host=host, data=data, name="scooby-doo")
     server.start()
 
     try:
