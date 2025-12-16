@@ -10,10 +10,12 @@ visu/WinPreference.py
 visu/__init__.py
 visu/aboutWindows.py
 visu/andor.py
+visu/clientTest.py
 visu/confServer.ini
 visu/confVisu.ini
 visu/defaultTrajectory.ini
 visu/default_values.ini
+visu/diagServer.py
 visu/moteurRSAI.py
 visu/moteurRSAIFDB.py
 visu/moteurRSAISERVER.py
@@ -31,6 +33,7 @@ visu/winMeas.py
 visu/winPointing.py
 visu/winSpectro.py
 visu/winSuppE.py
+visu/winSuppE_achive.py
 visu/winZoom.py
 visu/winspec.py
 visu.egg-info/PKG-INFO
@@ -55,6 +58,8 @@ visu/icons/Toggle_Off.svg
 visu/icons/Toggle_On.png
 visu/icons/Toggle_On.svg
 visu/icons/analytics.png
+visu/icons/antennaOff.png
+visu/icons/antennaOn.png
 visu/icons/briefcase.png
 visu/icons/calendar.png
 visu/icons/check-mark.png
@@ -96,6 +101,7 @@ visu/icons/saveAutoOn.png
 visu/icons/search.png
 visu/icons/send.png
 visu/icons/shield.png
+visu/icons/snapBackground.png
 visu/icons/target.png
 visu/icons/time.png
 visu/icons/up-and-down.png

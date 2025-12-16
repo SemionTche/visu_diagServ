@@ -52,7 +52,7 @@ from visu.winHist import HISTORY
 from visu import aboutWindows
 from visu.winZoom import ZOOM
 from visu.winCrop import WINCROP
-from visu.winSpectro import WINSPECTRO
+from visu.winSpectro2 import WINSPECTRO
 # try :
 #     from visu.Win3D import GRAPH3D #conda install pyopengl
 # except :
@@ -1393,8 +1393,8 @@ class SEE(QMainWindow):
             # print('emit new crop image')
             self.signalCrop.emit(self.cropImg)
         if self.spectro is True: 
-            if self.winSpectro.isWinOpen is True:
-                self.signalSpectro.emit(self.data)
+            #if self.winSpectro.isWinOpen is True:
+            self.signalSpectro.emit(self.data)
 
         self.signalDisplayed.emit(True)
         
@@ -1820,7 +1820,7 @@ class SEE(QMainWindow):
         data = {
             "state": "running", 
             "shotNumber":0, 
-            "data":np.random.rand(), 
+            "data":self.winSpectro.data_dict,
             "name":"spectrum"
         }
         self.serv.setData(data)

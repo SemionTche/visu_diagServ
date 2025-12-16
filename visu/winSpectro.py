@@ -19,6 +19,7 @@ import pyqtgraph as pg  # pyqtgraph biblio permettent l'affichage
 import numpy as np
 import qdarkstyle  # pip install qdakstyle https://github.com/ColinDuquesnoy/QDarkStyleSheet  sur conda
 import os
+
 import pathlib
 from scipy.ndimage import median_filter
 #from winCrop import WINCROP
@@ -26,6 +27,9 @@ from visu.WinCut import GRAPHCUT
 from visu.winMeas import MEAS
 from visu.InputElectrons import InputE
 from visu.CalculTraj import WINTRAJECTOIRE
+
+sys.path.insert(1, 'spectrum_analysis')
+import Deconvolve_Spectrum as Deconvolve
 
 class WINSPECTRO(QMainWindow):
     signalMeas = QtCore.pyqtSignal(object)
@@ -40,6 +44,7 @@ class WINSPECTRO(QMainWindow):
         else:
             self.conf = conf
         self.confSpectro = QtCore.QSettings(str(p.parent / 'default_values.ini'), QtCore.QSettings.Format.IniFormat)
+
         sepa = os.sep
         self.icon = str(p.parent) + sepa+'icons' + sepa
         self.path = self.conf.value(self.name+"/path")
@@ -64,8 +69,7 @@ class WINSPECTRO(QMainWindow):
         self.setWindowIcon(QIcon('./icons/LOA.png'))
         self.winInputE=InputE(parent=self)
         self.winTrajectory = WINTRAJECTOIRE(parent=self)
-        # self.win2=WINCROP()
-        # self.win3=WINCROP()
+
         self.winplot=GRAPHCUT()
         self.setup()
         self.shortcut()
@@ -79,6 +83,11 @@ class WINSPECTRO(QMainWindow):
             self.SpectroChanged()
         else :
             self.spectroInputValue()
+
+        # Create calibration for spectrum deconvolution _ LHC
+        self.deconv_calib = str(p.parent) + sepa+'spectrum_analysis' + sepa
+        self.calibration_data = Deconvolve.CalibrationData(cal_path=self.deconv_calib + 'dsdE_Small_LHC.txt')
+
 
     def setup(self):
         
@@ -153,7 +162,7 @@ class WINSPECTRO(QMainWindow):
         self.statusBar.addPermanentWidget(self.label_Cross)
         self.statusBar.addPermanentWidget(self.label_CrossValue)
 
-        self.checkBoxBg = QAction('Background Substraction On', self)
+        self.checkBoxBg = QAction('Background Subtraction On', self)
         self.checkBoxBg.setCheckable(True)
         self.checkBoxBg.setChecked(False)
         self.checkBoxBg.triggered.connect(self.SpectroChanged)
@@ -163,7 +172,7 @@ class WINSPECTRO(QMainWindow):
         self.winImage = pg.GraphicsLayoutWidget()
         self.winImage.setContentsMargins(0, 0, 0, 0)
         self.winImage.setAspectLocked(False)
-        # self.winImage.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
         self.winImage.ci.setContentsMargins(0, 0, 0, 0)
         self.vbox2.addWidget(self.winImage)
         self.vbox2.setContentsMargins(0, 0, 0, 0)
@@ -226,26 +235,25 @@ class WINSPECTRO(QMainWindow):
         else:
             self.checkBoxScale.setIcon(QtGui.QIcon(self.icon+"minimize.png"))
             self.checkBoxScale.setText('Auto Scale Off')
+
+    def Display_LHC(self, data):
+        self.dataOrg = data
+        deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(self.dataOrg, calibration_data, 0.5, 20.408, 0.1, "zero",
+                                                              (1953, 635), 4.33e-6)
+        deconvolved_spectrum.deconvolve_data(self.dataOrg)
+        deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
     
     def Display(self, data):
 
-        # self.open_widget(self.win2)
-        # self.open_widget(self.winplot)
-        # self.open_widget(self.win3)
-        # self.win2.setWindowTitle('win Background crop )')
-        
         self.dataOrg=data
         self.data = data[self.wmin:self.wmax+1,self.hmin:self.hmax+1]
         self.dimx = self.data.shape[0]
         self.dimy = self.data.shape[1]
         
         if self.checkBoxBg.isChecked() is True:
-            # print('hmin hmax',self.winInputE.hminBg,self.winInputE.hmaxBg)
             #self.bg = self.winInputE.rectSelectBack.getArrayRegion(spectrum_2D.T, self.imh)
             self.bg =self.data[:, self.winInputE.hminBg:self.winInputE.hmaxBg ] # 
 
-            # self.win3.Display(self.bg)
-            # self.win3.setWindowTitle('win bg crop')
             if self.filterMed >0:
                 self.data = np.array(median_filter(self.data , self.filterMed))
                 self.bg = median_filter(self.bg , self.filterMed)
@@ -333,9 +341,6 @@ class WINSPECTRO(QMainWindow):
                 self.Measurement()
             else:
                 self.Measurement()
-        # except:
-        #     self.errorDisplay = True
-        #     print('error Display: Calibrate')
 
 
     def shortcut(self):
@@ -467,29 +472,6 @@ class WINSPECTRO(QMainWindow):
         self.cut = (self.plotRect.getArrayRegion(self.data, self.imh))
         self.xini=self.plotRect.pos()[0]
         self.yini=self.plotRect.pos()[1]
-        
-        # # Rectangle stay inside view
-        # if self.plotRect.pos()[0] < 0:
-        #     self.plotRect.setPos([0, self.plotRect.pos()[1]])
-
-        # if self.plotRect.pos()[0]+self.plotRect.size()[0] > self.dimx:
-        #     x = self.plotRect.pos()[0]
-        #     y = self.plotRect.pos()[1]
-        #     sizex = self.dimx-self.plotRect.pos()[0]
-        #     sizey = self.plotRect.size()[1]
-        #     self.plotRect.setSize([sizex, sizey], update=False)
-        #     self.plotRect.setPos([x, y])
-
-        # if self.plotRect.pos()[1]+self.plotRect.size()[1] > self.dimy:
-        #     x = self.plotRect.pos()[0]
-        #     y = self.plotRect.pos()[1]
-        #     sizex = self.plotRect.size()[0]
-        #     sizey = self.dimy-self.plotRect.pos()[1]
-        #     self.plotRect.setSize([sizex, sizey], update=False)
-        #     self.plotRect.setPos([x, y])
-
-        # if self.plotRect.pos()[1] < 0:
-        #     self.plotRect.setPos([self.plotRect.pos()[0], 0])
 
     def spectroFunct(self):
         self.open_widget(self.winSpectro)
