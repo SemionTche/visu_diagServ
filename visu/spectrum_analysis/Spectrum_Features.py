@@ -8,8 +8,9 @@ def weighted_avg_and_std(values: np.ndarray, weights: np.ndarray):
     return (average, m.sqrt(variance))
 
 
-def build_dict(energy: np.ndarray, data: np.ndarray):
-    mean_energy, stdev_energy = weighted_avg_and_std(energy, data)
-    data_dict = {('FWHM', stdev_energy),
-                 ('Mean energy', mean_energy)}
+def build_dict(energy: np.ndarray, data: np.ndarray, shotNum: int):
+    mean_energy, std_energy = weighted_avg_and_std(energy, data)
+    data_dict = {('Std energy', std_energy),
+                 ('Mean energy', mean_energy),
+                 ('Shot number', shotNum)}
     return data_dict

@@ -6,8 +6,8 @@ Created on 2025/12/16
 Spectrum deconvolution + make data available
 """
 import Spectrum_Features
-from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from PyQt6.QtWidgets import QLabel, QMainWindow, QFileDialog,QStatusBar
+from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
+from PyQt6.QtWidgets import QLabel, QMainWindow, QFileDialog,QStatusBar, QCheckBox, QDoubleSpinBox
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
@@ -30,7 +30,8 @@ sys.path.insert(1, 'spectrum_analysis')
 sepa = os.sep
 
 class WINSPECTRO(QMainWindow):
-    signalMeas = QtCore.pyqtSignal(object)
+    signalSpectroDict = QtCore.pyqtSignal(object)
+
     def __init__(self, parent=None, file=None, conf=None, name='VISU',**kwds):
         '''
 
@@ -58,13 +59,15 @@ class WINSPECTRO(QMainWindow):
 
     def setup(self):
 
+        #####################################################################
         # Window setup
+        #####################################################################
         self.isWinOpen = False
         self.setWindowTitle('Electrons spectrometer')
         self.setWindowIcon(QIcon(self.icon + 'LOA.png'))
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
         self.setWindowIcon(QIcon('./icons/LOA.png'))
-        self.setGeometry(100, 30, 800, 800)
+        self.setGeometry(100, 30, 1200, 800)
 
         self.toolBar = self.addToolBar('tools')
         self.toolBar.setMovable(False)
@@ -73,22 +76,46 @@ class WINSPECTRO(QMainWindow):
 
         self.fileMenu = self.menuBar().addMenu('&File')
 
-        # Setup vertical box with stacked graphs
-        self.vbox = QVBoxLayout()
+        #####################################################################
+        # Global layout and geometry
+        #####################################################################
+
+        # Horizontal box with LHS graphs, and RHS controls and indicators
+        self.hbox = QHBoxLayout()
         MainWidget = QWidget()
-        MainWidget.setLayout(self.vbox)
+        MainWidget.setLayout(self.hbox)
         self.setCentralWidget(MainWidget)
 
-        # Setup 2D plot (image histogram)
+        # LHS vertical box with stacked graphs
+        self.vbox1 = QVBoxLayout()
+        self.hbox.addLayout(self.vbox1)
+
+        # RHS vertical box with controls and indicators
+        self.vbox2 = QVBoxLayout()
+        self.vbox2widget = QWidget()
+        self.vbox2widget.setLayout(self.vbox2)
+        #self.vbox2widget.setFixedWidth(300)
+        self.hbox.addWidget(self.vbox2widget)
+
+        # Grid layout for controls and indicators
+        self.grid_layout = QGridLayout()
+        self.vbox2.addLayout(self.grid_layout)  # add grid to RHS panel
+        self.vbox2.addStretch(1)
+
+        #####################################################################
+        # Fill layout with graphs, controls and indicators
+        #####################################################################
+
+        # 2D plot (image histogram) in LHS vbox
         self.winImage = pg.GraphicsLayoutWidget()
-        self.vbox.addWidget(self.winImage)
+        self.vbox1.addWidget(self.winImage)
 
         self.spectrum_2D_image = self.winImage.addPlot()
         self.image_histogram = pg.ImageItem()
         self.spectrum_2D_image.addItem(self.image_histogram)
         self.spectrum_2D_image.setContentsMargins(10, 10, 10, 10)
 
-        # histogramvalue()
+        # Setup colours in 2D plot
         self.hist = pg.HistogramLUTItem()
         self.hist.setImageItem(self.image_histogram)
         self.hist.autoHistogramRange()
@@ -96,10 +123,35 @@ class WINSPECTRO(QMainWindow):
 
         # Setup 1D plot (dN/dE vs. E)
         self.graph_widget = pg.GraphicsLayoutWidget()
-        self.vbox.addWidget(self.graph_widget)
+        self.vbox1.addWidget(self.graph_widget)
 
         self.dnde_image = self.graph_widget.addPlot()
         self.dnde_image.setContentsMargins(10, 10, 10, 10)
+
+        # Controls and indicators, labels
+        Title = QLabel('Controls and indicators')
+        self.flip_image = QCheckBox('Deflection: Right to Left?', self)
+        self.flip_image.setChecked(True)
+
+        cutoff_energies = QLabel('Cutoff energies (MeV)')
+        self.min_cutoff_energy = QDoubleSpinBox()  # for the value
+        self.min_cutoff_energy.setValue(10)
+        self.min_cutoff_energy.setMinimum(0)
+        self.min_cutoff_energy.setSingleStep(1)
+
+        self.max_cutoff_energy = QDoubleSpinBox()  # for the value
+        self.max_cutoff_energy.setValue(200)
+        self.max_cutoff_energy.setMinimum(50)
+        self.max_cutoff_energy.setSingleStep(10)
+
+        # Fill grid with controls and indicators
+        self.grid_layout.addWidget(Title,0,1)
+        self.grid_layout.addWidget(QLabel(), 1, 3)
+        self.grid_layout.addWidget(self.flip_image, 2, 0)
+        self.grid_layout.addWidget(cutoff_energies, 3, 0)
+        self.grid_layout.addWidget(self.min_cutoff_energy, 3, 1)
+        self.grid_layout.addWidget(self.max_cutoff_energy, 3, 2)
+
 
 
     def load_calib(self):
@@ -137,6 +189,7 @@ class WINSPECTRO(QMainWindow):
         if self.parent is not None:
             # if signal emit in another thread (see visual)
             self.parent.signalSpectro.connect(self.Display)
+            self.parent.signalSpectroList.connect(self.spectro_dict)
 
     def Display(self, data):
 
@@ -148,11 +201,17 @@ class WINSPECTRO(QMainWindow):
         self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
         self.dnde_image.plot(self.deconvolved_spectrum.energy, self.deconvolved_spectrum.integrated_spectrum)
 
+
+
+    def spectro_dict(self, temp_dataArray):
         # Creation of dictionary to pass to diagServ ; to be integrated to another function, with another signal
+        # temp_dataArray : [data from parent, shot number] ; added data from parent in case we want to compute but
+        # not display!
         # Only process data without noise! Maybe make function that automatically removes noise?
-        self.data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy[50:150],
-                                                      self.deconvolved_spectrum.integrated_spectrum[50:150])
-        print(self.data_dict)
+        self.spectro_data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy[50:150],
+                                                      self.deconvolved_spectrum.integrated_spectrum[50:150],
+                                                      temp_dataArray[1])
+        self.signalSpectroDict.emit(self.spectro_data_dict)
 
 
 if __name__ == "__main__":

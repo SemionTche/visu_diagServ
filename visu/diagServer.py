@@ -9,7 +9,9 @@ cfg = configparser.ConfigParser()
 
 
 class diagServer(threading.Thread):
-    def __init__(self, 
+
+    def __init__(self,
+                 parent = None,
                  address: str = "tcp://*:1110",
                  host: str = "localhost",
                  data: dict | None = None, 
@@ -30,6 +32,8 @@ class diagServer(threading.Thread):
             serv.stop()
 
         Args:
+            parent: parent,
+                if access to parent attributes is necessary
             address: (str)
                 the server adress.
             
@@ -51,6 +55,9 @@ class diagServer(threading.Thread):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
         self.socket.bind(self._address)
+
+        self._parent = parent
+        self._setup_signal()
 
         self._running = threading.Event()
         self._running.set()
@@ -98,6 +105,15 @@ class diagServer(threading.Thread):
                                 # else use the specific adress required by the server
 
         return f"{proto}://{host}:{port}"
+
+    def _setup_signal(self) -> None:
+        '''
+        Subscribe to event from spectrometer
+        '''
+        if self._parent.spectro is not None:
+            self._parent.winSpectro.signalSpectroDict.connect(self._foo)
+    def _foo(self, spectro_data_dict):
+        print(f'Spectrometer dictionary: {spectro_data_dict}')
 
     def setData(self, newData: dict) -> None:
         '''
