@@ -115,6 +115,7 @@ class diagServer(threading.Thread):
     def _foo(self, spectro_data_dict):
         print(f'Spectrometer dictionary: {spectro_data_dict}')
 
+
     def setData(self, newData: dict) -> None:
         '''
         Set a new dictionary to transmit.
