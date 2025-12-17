@@ -57,7 +57,8 @@ class diagServer(threading.Thread):
         self.socket.bind(self._address)
 
         self._parent = parent
-        self._setup_signal()
+        if parent is not None:
+            self._setup_signal()
 
         self._running = threading.Event()
         self._running.set()
@@ -112,6 +113,7 @@ class diagServer(threading.Thread):
         '''
         if self._parent.spectro is not None:
             self._parent.winSpectro.signalSpectroDict.connect(self._foo)
+    
     def _foo(self, spectro_data_dict):
         print(f'Spectrometer dictionary: {spectro_data_dict}')
 
@@ -211,21 +213,22 @@ class diagServer(threading.Thread):
 
 
 if __name__ == "__main__":
-    cfg.read("visu_diagServ/visu/confServer.ini")
-    print(cfg.sections())
+    # cfg.read("visu_diagServ/visu/confServer.ini")
+    # print(cfg.sections())
 
-    print("cwd =", os.getcwd())
-    print("exists:", os.path.exists("visu_diagServ/visu/confServer.ini"))
+    # print("cwd =", os.getcwd())
+    # print("exists:", os.path.exists("visu_diagServ/visu/confServer.ini"))
 
-    host = cfg["diagServer"].get("serverHost")
-    port = cfg["diagServer"].get("serverPort")
+    # host = cfg["diagServer"].get("serverHost")
+    # port = cfg["diagServer"].get("serverPort")
 
-    address = f"tcp://*:{port}"
+    # address = f"tcp://*:{port}"
+    # print(f"host = {host}")
+    # print(f"port = {port}")
+    # print(f"address = {address}")
+    address = "tcp://*:1230"
+    host = ""
     data = {"hello": "world", "x": 42}
-    print(f"host = {host}")
-    print(f"port = {port}")
-    print(f"address = {address}")
-
     server = diagServer(address=address, host=host, data=data, name="scooby-doo")
     server.start()
 

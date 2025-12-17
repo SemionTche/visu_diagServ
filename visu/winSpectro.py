@@ -28,8 +28,9 @@ from visu.winMeas import MEAS
 from visu.InputElectrons import InputE
 from visu.CalculTraj import WINTRAJECTOIRE
 
-sys.path.insert(1, 'spectrum_analysis')
-import Deconvolve_Spectrum as Deconvolve
+# sys.path.insert(1, 'spectrum_analysis')
+# import Deconvolve_Spectrum as Deconvolve
+from visu.spectrum_analysis import Deconvolve_Spectrum as Deconvolve
 
 class WINSPECTRO(QMainWindow):
     signalMeas = QtCore.pyqtSignal(object)
