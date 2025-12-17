@@ -30,7 +30,7 @@ sys.path.insert(1, 'spectrum_analysis')
 sepa = os.sep
 
 class WINSPECTRO(QMainWindow):
-    signalMeas = QtCore.pyqtSignal(object)
+    signalSpectroDict = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None, file=None, conf=None, name='VISU',**kwds):
         '''
@@ -149,8 +149,8 @@ class WINSPECTRO(QMainWindow):
         self.grid_layout.addWidget(QLabel(), 1, 3)
         self.grid_layout.addWidget(self.flip_image, 2, 0)
         self.grid_layout.addWidget(cutoff_energies, 3, 0)
-        self.grid_layout.addWidget(self.max_cutoff_energy, 3, 1)
-        self.grid_layout.addWidget(self.min_cutoff_energy, 3, 2)
+        self.grid_layout.addWidget(self.min_cutoff_energy, 3, 1)
+        self.grid_layout.addWidget(self.max_cutoff_energy, 3, 2)
 
 
 
@@ -189,7 +189,7 @@ class WINSPECTRO(QMainWindow):
         if self.parent is not None:
             # if signal emit in another thread (see visual)
             self.parent.signalSpectro.connect(self.Display)
-            self.parent.signalSpectroDict.connect(self.spectro_dict)
+            self.parent.signalSpectroList.connect(self.spectro_dict)
 
     def Display(self, data):
 
@@ -208,9 +208,10 @@ class WINSPECTRO(QMainWindow):
         # temp_dataArray : [data from parent, shot number] ; added data from parent in case we want to compute but
         # not display!
         # Only process data without noise! Maybe make function that automatically removes noise?
-        self.data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy[50:150],
+        self.spectro_data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy[50:150],
                                                       self.deconvolved_spectrum.integrated_spectrum[50:150],
                                                       temp_dataArray[1])
+        self.signalSpectroDict.emit(self.spectro_data_dict)
 
 
 if __name__ == "__main__":

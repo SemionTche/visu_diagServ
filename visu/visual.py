@@ -94,7 +94,7 @@ class SEE(QMainWindow):
     signalPlot = QtCore.pyqtSignal(object)
     signalCrop = QtCore.pyqtSignal(object)
     signalSpectro = QtCore.pyqtSignal(object)
-    signalSpectroDict = QtCore.pyqtSignal(object)
+    signalSpectroList = QtCore.pyqtSignal(object)
     signalDisplayed = QtCore.pyqtSignal(object)  # Emit when display a image
 
     def __init__(self, file=None, path=None, parent=None, **kwds):
@@ -327,7 +327,7 @@ class SEE(QMainWindow):
         self.yminR = 0
         self.ymaxR = self.dimy
 
-        self.serv = diagServer(data={"state":"starting..."}) # init the server
+        self.serv = diagServer(parent=self, data={"state":"starting..."}) # init the server
         self.serv.start() # start the server thread
 
         self.shortcut()
@@ -1398,7 +1398,7 @@ class SEE(QMainWindow):
             self.signalSpectro.emit(self.data)
             temp_shotnumber = -1
             self.temp_dataArray = [self.data, temp_shotnumber]
-            self.signalSpectroDict.emit(self.temp_dataArray)
+            self.signalSpectroList.emit(self.temp_dataArray)
 
         self.signalDisplayed.emit(True)
         
