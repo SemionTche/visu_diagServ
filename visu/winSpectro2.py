@@ -5,7 +5,6 @@ Created on 2025/12/16
 @author: Aline Vernier
 Spectrum deconvolution + make data available
 """
-import Spectrum_Features
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
 from PyQt6.QtWidgets import QLabel, QMainWindow, QFileDialog,QStatusBar, QCheckBox, QDoubleSpinBox
 from PyQt6 import QtCore, QtGui
@@ -22,9 +21,8 @@ import os
 from scipy.signal import lfilter
 import pathlib
 
-
-import Deconvolve_Spectrum as Deconvolve
-import Spectrum_Features as compute
+from visu.spectrum_analysis import Deconvolve_Spectrum as Deconvolve
+from visu.spectrum_analysis import Spectrum_Features
 
 sys.path.insert(1, 'spectrum_analysis')
 sepa = os.sep
