@@ -79,7 +79,7 @@ class OPTION(QWidget):
         vbox1 = QVBoxLayout()
         self.buttonPath = QPushButton('Path : ')
         self.pathBox = QLineEdit(str(self.conf.value(self.name+"/pathAutoSave")))
-        self.pathBox.setMaximumHeight(60)
+
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.buttonPath)
         hbox1.addWidget(self.pathBox)
