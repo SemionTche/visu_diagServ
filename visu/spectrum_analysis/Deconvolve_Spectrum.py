@@ -71,11 +71,11 @@ class DeconvolvedSpectrum:
 
     def set_axes(self):
         # x-axis: energy
-        if self.ref_mode == "zero":
+        if self.ref_mode == "Zero":
             x_min = self.ref_point[0] + self.offset_px - self._image_dimensions[1]
             x_max = self.ref_point[0] + self.offset_px
 
-        elif self.ref_mode == "refpoint":
+        elif self.ref_mode == "RefPoint":
             s_ref = np.interp(self.ref_point[1], self.calibration.energy, self.calibration.s, 
                                         right=np.nan, left=np.nan)
             x_min = int((s_ref - self.ref_point[0])*self.pixel_per_mm) + self.offset_px
@@ -167,19 +167,19 @@ if __name__ == "__main__":
     For testing purposes, usage with refpoint (x, 10 MeV) as reference:
         x-coor = s(10MeV)+(imsize-1953)/mm_per_px = 47.86mm 
     """
-    show = False
+    show = True
     # Load image and calibration
-    spImage = spectrum_image(im_path=f'..{sep}data{sep}magnet0.4T_Soectrum_isat4.9cm_26bar_gdd25850_HeAr_0002.TIFF',
+    spImage = spectrum_image(im_path=f'magnet0.4T_Soectrum_isat4.9cm_26bar_gdd25850_HeAr_0002.TIFF',
                              revert=True)
-    calibration_data = CalibrationData(cal_path=f'..{sep}data{sep}dsdE_Small_LHC.txt')
+    calibration_data = CalibrationData(cal_path=f'dsdE_Small_LHC.txt')
 
     # Deconvolve data
     # "refpoint" method
     #deconvolved_spectrum = DeconvolvedSpectrum(spImage, calibration_data,0.5,
     #                                           20.408, 0.1,
-    #                                           "refpoint", (47.855, 10))
+    #                                           "refPoint", (47.855, 10))
     # "zero" method
-    deconvolved_spectrum = DeconvolvedSpectrum(spImage, calibration_data, 0.5, 20.408, 0.1, "zero", (1953, 635),
+    deconvolved_spectrum = DeconvolvedSpectrum(spImage, calibration_data, 0.5, 20.408, 0.1, "Zero", (1953, 635),
                                                4.33e-6, 0)
     t0 = t.time()
     deconvolved_spectrum.deconvolve_data(spImage)

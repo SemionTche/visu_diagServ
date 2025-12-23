@@ -6,7 +6,7 @@ Created on 2025/12/16
 Build Spectrometer Interface - GUI only
 """
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
-from PyQt6.QtWidgets import (QLabel, QMainWindow, QStatusBar, QComboBox,
+from PyQt6.QtWidgets import (QLabel, QMainWindow, QStatusBar, QComboBox, QAbstractSpinBox,
                              QCheckBox, QDoubleSpinBox,  QPushButton, QLineEdit)
 from PyQt6.QtGui import QIcon, QFont
 import sys
@@ -23,7 +23,6 @@ class Spectrometer_Interface(QMainWindow):
         super().__init__()
         p = pathlib.Path(__file__)
         self.icon = str(p.parent.parent) + sepa + 'icons' + sepa
-        print(self.icon)
         self.setup()
         self.action_button()
 
@@ -36,7 +35,7 @@ class Spectrometer_Interface(QMainWindow):
         self.setWindowIcon(QIcon(self.icon + 'LOA.png'))
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
         self.setWindowIcon(QIcon('./icons/LOA.png'))
-        self.setGeometry(100, 30, 1200, 800)
+        self.setGeometry(100, 30, 1200, 650)
 
         self.toolBar = self.addToolBar('tools')
         self.toolBar.setMovable(False)
@@ -134,6 +133,7 @@ class Spectrometer_Interface(QMainWindow):
         grid_layout_enable_controls.addWidget(self.enable_controls, 0, 1)
         grid_layout_enable_controls.addWidget(self.locked_unlocked, 0, 2)
         self.vbox2.addLayout(grid_layout_enable_controls)
+        self.vbox2.addStretch(1)
 
         ######################
         # E, ds/dE, s config
@@ -161,107 +161,91 @@ class Spectrometer_Interface(QMainWindow):
         ######################
 
         grid_layout_calib = QGridLayout()
+        flip_image_label = QLabel('s-axis R to L')
 
-        px_per_mm_label = QLabel('px/mm')
-        mrad_per_px_label = QLabel('mrad/px')
-        pC_per_count_label = QLabel('pC/count ×10<sup>-6</sup>')
-        reference_label = QLabel('Ref. Method')
-
-        self.px_per_mm_ctl = QDoubleSpinBox()
-        self.mrad_per_px_ctl = QDoubleSpinBox()
-        self.pC_per_count_ctl = QDoubleSpinBox()
-        self.reference_method = QComboBox()
-        self.refpoint_x_or_energy = QDoubleSpinBox()
-        self.refpoint_y_or_s = QDoubleSpinBox()
-
-        self.reference_method.addItem('Zero')
-        self.reference_method.addItem('RefPoint')
-        self.reference_pts_label = QLabel('(x, y): (px, px)')
-
-        self.pC_per_count_ctl.setMinimum(0.001)
-        self.pC_per_count_ctl.setMaximum(1000)
-        self.pC_per_count_ctl.setValue(4.33)
-
-        self.mrad_per_px_ctl.setMinimum(1e-6)
-        self.mrad_per_px_ctl.setMaximum(1)
-        self.mrad_per_px_ctl.setValue(0.1)
-
-        self.px_per_mm_ctl.setMinimum(1.)
-        self.px_per_mm_ctl.setMaximum(10000.)
-        self.px_per_mm_ctl.setValue(20.408)
-
-        self.refpoint_x_or_energy.setMinimum(0)
-        self.refpoint_x_or_energy.setMaximum(10000)
-        self.refpoint_x_or_energy.setValue(2000)
-
-        self.refpoint_x_or_energy.setMinimum(0)
-        self.refpoint_x_or_energy.setMaximum(10000)
-        self.refpoint_x_or_energy.setValue(2000)
-
-        self.refpoint_y_or_s.setMinimum(0)
-        self.refpoint_y_or_s.setMaximum(10000)
-        self.refpoint_y_or_s.setValue(650)
-
-        grid_layout_calib.addWidget(px_per_mm_label, 0, 0)
-        grid_layout_calib.addWidget(self.px_per_mm_ctl, 0, 1)
-        grid_layout_calib.addWidget(mrad_per_px_label, 1, 0)
-        grid_layout_calib.addWidget(self.mrad_per_px_ctl, 1, 1)
-        grid_layout_calib.addWidget(reference_label, 2, 0)
-        grid_layout_calib.addWidget(self.reference_method, 2, 1)
-        grid_layout_calib.addWidget(self.reference_pts_label, 3, 0)
-        grid_layout_calib.addWidget(self.refpoint_x_or_energy, 3, 1)
-        grid_layout_calib.addWidget(self.refpoint_y_or_s, 3, 2)
-        grid_layout_calib.addWidget(pC_per_count_label, 4, 0)
-        grid_layout_calib.addWidget(self.pC_per_count_ctl, 4, 1)
-        self.vbox2.addLayout(grid_layout_calib)
-
-        self.flip_image = QCheckBox('Deflect.: R to L?', self)
+        self.flip_image = QCheckBox()
         self.flip_image.setChecked(True)
 
         lanex_offset_label = QLabel('Lanex Offset (+ to low E)')
-        self.lanex_offset_mm_ctl = QDoubleSpinBox()
-        self.lanex_offset_mm_ctl.setFixedWidth(80)
-        self.lanex_offset_mm_ctl.setValue(0)
-        self.lanex_offset_mm_ctl.setSingleStep(.1)
-        self.lanex_offset_mm_ctl.setMinimum(-100.)
-        self.lanex_offset_mm = self.lanex_offset_mm_ctl.value()
+        self.lanex_offset_mm_ctl = Numeric_IO(min=-100, max=100, incr=0.1, value=0, enabled=True)
+
+        px_per_mm_label = QLabel('px/mm')
+        self.px_per_mm_ctl = Numeric_IO(min=0.001, max=1000, incr=1, value=20.408, enabled=True)
+
+        mrad_per_px_label = QLabel('mrad/px')
+        self.mrad_per_px_ctl = Numeric_IO(min=1e-6, max=1, incr=0.1, value=0.1, enabled=True)
+
+        pC_per_count_label = QLabel('pC/count ×10<sup>-6</sup>')
+        self.pC_per_count_ctl = Numeric_IO(min=0.001, max=1000, incr=0.1, value=4.33, enabled=True)
+
+        reference_label = QLabel('Ref. Method')
+        self.reference_method = QComboBox()
+        self.reference_method.addItem('Zero')
+        self.reference_method.addItem('RefPoint')
+
+        self.reference_pts_label = QLabel('(x, y): (px, px)')
+        self.refpoint_x_or_energy = Numeric_IO(min=0, max=10000, incr=1, value=1953, enabled=True)
+        self.refpoint_y_or_s = Numeric_IO(min=0, max=10000, incr=1, value=650, enabled=True)
+
+
+        grid_layout_calib.addWidget(flip_image_label, 0, 0)
+        grid_layout_calib.addWidget(self.flip_image, 0, 1)
+        grid_layout_calib.addWidget(lanex_offset_label, 1, 0)
+        grid_layout_calib.addWidget(self.lanex_offset_mm_ctl, 1, 1)
+        grid_layout_calib.addWidget(px_per_mm_label, 2, 0)
+        grid_layout_calib.addWidget(self.px_per_mm_ctl, 2, 1)
+        grid_layout_calib.addWidget(mrad_per_px_label, 3, 0)
+        grid_layout_calib.addWidget(self.mrad_per_px_ctl, 3, 1)
+        grid_layout_calib.addWidget(reference_label, 4, 0)
+        grid_layout_calib.addWidget(self.reference_method, 4, 1)
+        grid_layout_calib.addWidget(self.reference_pts_label, 5, 0)
+        grid_layout_calib.addWidget(self.refpoint_x_or_energy, 5, 1)
+        grid_layout_calib.addWidget(self.refpoint_y_or_s, 5, 2)
+        grid_layout_calib.addWidget(pC_per_count_label, 6, 0)
+        grid_layout_calib.addWidget(self.pC_per_count_ctl, 6, 1)
+        self.vbox2.addLayout(grid_layout_calib)
+
+        self.vbox2.addStretch(1)
+
+        ######################
+        #   Post-processing
+        ######################
 
         cutoff_energies_label = QLabel('Cutoff energies (MeV)')
-        self.min_cutoff_energy_ctl = QDoubleSpinBox()
-        self.min_cutoff_energy_ctl.setFixedWidth(80)
-        self.min_cutoff_energy_ctl.setValue(10)
-        self.min_cutoff_energy = self.min_cutoff_energy_ctl.value()
-        self.min_cutoff_energy_ctl.setMinimum(0)
-        self.min_cutoff_energy_ctl.setSingleStep(1)
+        self.min_cutoff_energy_ctl = Numeric_IO(min=0, max=10000, incr=1, value=10, enabled=True)
+        self.max_cutoff_energy_ctl = Numeric_IO(min=0, max=10000, incr=1, value=150, enabled=True)
 
-        self.max_cutoff_energy_ctl = QDoubleSpinBox()
-        self.max_cutoff_energy_ctl.setFixedWidth(80)
-        self.max_cutoff_energy_ctl.setValue(200)
-        self.max_cutoff_energy = self.max_cutoff_energy_ctl.value()
-        self.max_cutoff_energy_ctl.setMinimum(50)
-        self.max_cutoff_energy_ctl.setSingleStep(10)
 
         energy_resolution_label = QLabel('Energy resolution (MeV)')
-        self.energy_resolution_ctl = QDoubleSpinBox()
-        self.energy_resolution_ctl.setFixedWidth(80)
-        self.energy_resolution_ctl.setValue(0.5)
-        self.max_cutoff_energy_ctl.setMinimum(0.1)
-        self.max_cutoff_energy_ctl.setMaximum(10)
-        self.max_cutoff_energy_ctl.setSingleStep(0.5)
+        self.energy_resolution_ctl = Numeric_IO(min=0.1, max=10, incr=0.5, value=0.5, enabled=True)
 
-        # Fill grid with controls and indicators
-        self.grid_layout = QGridLayout()
-        self.vbox2.addLayout(self.grid_layout)  # add grid to RHS panel
-        self.vbox2.addStretch(1)
-        self.grid_layout.addWidget(QLabel(), 1, 2)
-        self.grid_layout.addWidget(self.flip_image, 2, 0)
-        self.grid_layout.addWidget(cutoff_energies_label, 3, 0)
-        self.grid_layout.addWidget(self.min_cutoff_energy_ctl, 3, 2)
-        self.grid_layout.addWidget(self.max_cutoff_energy_ctl, 3, 3)
-        self.grid_layout.addWidget(lanex_offset_label, 4, 0)
-        self.grid_layout.addWidget(self.lanex_offset_mm_ctl, 4, 3)
-        self.grid_layout.addWidget(energy_resolution_label, 5, 0)
-        self.grid_layout.addWidget(self.energy_resolution_ctl, 5, 3)
+
+        mean_energy_label = QLabel('Mean energy')
+        self.mean_energy_ind = Numeric_IO(enabled=False)
+
+        stdev_energy_label = QLabel('Energy Std Dev')
+        self.stdev_energy_ind = Numeric_IO(enabled=False)
+
+        post_proc_layout = QGridLayout()
+        post_proc_layout.addWidget(QLabel(), 1, 2)
+        post_proc_layout.addWidget(cutoff_energies_label, 3, 0)
+        post_proc_layout.addWidget(self.min_cutoff_energy_ctl, 3, 2)
+        post_proc_layout.addWidget(self.max_cutoff_energy_ctl, 3, 3)
+        post_proc_layout.addWidget(energy_resolution_label, 5, 0)
+        post_proc_layout.addWidget(self.energy_resolution_ctl, 5, 3)
+        post_proc_layout.addWidget(mean_energy_label, 6, 0)
+        post_proc_layout.addWidget(self.mean_energy_ind, 6, 3)
+        post_proc_layout.addWidget(stdev_energy_label, 7, 0)
+        post_proc_layout.addWidget(self.stdev_energy_ind, 7, 3)
+        self.vbox2.addLayout(post_proc_layout)
+
+        ######################
+        #  Interface comfort
+        ######################
+        self.clear_graph_ctl = QPushButton(text="Clear Graph")
+        interface_comfort_layout = QGridLayout()
+        interface_comfort_layout.addWidget(self.clear_graph_ctl, 0, 1)
+        self.vbox2.addLayout(interface_comfort_layout)
 
         #####################################################################
         #                       Interface actions
@@ -274,12 +258,16 @@ class Spectrometer_Interface(QMainWindow):
         self.enable_controls.stateChanged.connect(self.enable_disable_controls)
         self.flip_image.stateChanged.connect(self.clear_graph)
         self.reference_method.currentTextChanged.connect(self.update_refpoint)
+        self.clear_graph_ctl.clicked.connect(self.clear_graph)
 
     def update_refpoint(self):
         if self.reference_method.currentText() == "Zero":
             self.reference_pts_label.setText('(x, y): (px, px)')
         else:
             self.reference_pts_label.setText('(E, s): (MeV, mm)')
+        self.clear_graph()
+        self.load_calib()
+        self.graph_setup()
 
     def clear_graph(self):
         self.dnde_image.clear()
@@ -294,6 +282,7 @@ class Spectrometer_Interface(QMainWindow):
             self.locked_unlocked.setText('Unlocked')
         else:
             self.locked_unlocked.setText('Locked')
+
         self.min_cutoff_energy_ctl.setEnabled(self.enable_controls.isChecked())
         self.max_cutoff_energy_ctl.setEnabled(self.enable_controls.isChecked())
         self.flip_image.setEnabled(self.enable_controls.isChecked())
@@ -326,6 +315,18 @@ class Spectrometer_Interface(QMainWindow):
         self.clear_graph()
         self.load_calib()
         self.graph_setup()
+
+class Numeric_IO(QDoubleSpinBox):
+    def __init__(self, min:float=0, max: float=100, incr: float=1,
+                 value: float=1, enabled: bool=True):
+        super().__init__()
+        self.setMinimum(min)
+        self.setMaximum(max)
+        self.setSingleStep(incr)
+        self.setEnabled(enabled)
+        self.setFixedWidth(80)
+        self.setValue(value)
+
 
 if __name__ == "__main__":
 

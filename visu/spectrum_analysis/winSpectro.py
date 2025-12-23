@@ -17,6 +17,7 @@ from visu.spectrum_analysis import Deconvolve_Spectrum as Deconvolve
 from visu.spectrum_analysis import Spectrum_Features
 from visu.spectrum_analysis import Build_Interface
 
+
 sys.path.insert(1, '')
 sepa = os.sep
 
@@ -64,9 +65,12 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
                                               revert=True)
         self.deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(initImage, self.calibration_data,
                                                                    self.energy_resolution_ctl.value(),
-                                                                   20.408, 0.1,
-                                                                   "zero", (1953, 635),
-                                                                   4.33e-6,
+                                                                   self.px_per_mm_ctl.value(),
+                                                                   self.mrad_per_px_ctl.value(),
+                                                                   self.reference_method.currentText(),
+                                                                   (self.refpoint_x_or_energy.value(),
+                                                                    self.refpoint_y_or_s.value()),
+                                                                   self.pC_per_count_ctl.value(),
                                                                    offset=self.lanex_offset_mm_ctl.value())
 
     def graph_setup(self):
@@ -79,11 +83,10 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
             self.deconvolved_spectrum.energy[0],  # x origin
             self.deconvolved_spectrum.angle[0],  # y origin
             self.deconvolved_spectrum.energy[-1] - self.deconvolved_spectrum.energy[0],  # width
-            self.deconvolved_spectrum.angle[-1] - self.deconvolved_spectrum.angle[0] ) # height
+            self.deconvolved_spectrum.angle[-1] - self.deconvolved_spectrum.angle[0])    # height
 
         self.dnde_image.setLabel('bottom', 'Energy')
         self.dnde_image.setLabel('left', 'dN/dE (pC/MeV)')
-
 
 
     #####################################################################
@@ -118,8 +121,8 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
         self.spectro_data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy,
                                                               self.deconvolved_spectrum.integrated_spectrum,
                                                               temp_dataArray[1],
-                                                              energy_bounds=[self.min_cutoff_energy,
-                                                                             self.max_cutoff_energy])
+                                                              energy_bounds=[self.min_cutoff_energy_ctl.value(),
+                                                                             self.max_cutoff_energy_ctl.value()])
         self.signalSpectroDict.emit(self.spectro_data_dict) # Signal for DiagServ
 
 
