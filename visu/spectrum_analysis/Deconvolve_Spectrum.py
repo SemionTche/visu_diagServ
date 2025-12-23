@@ -45,12 +45,14 @@ class DeconvolvedSpectrum:
     :param ref_mode: string, should be "zero" or "refpoint"
     :param ref_point: tuple, either (x, y) coordinates of zero in pixels if chosen method is "zero"
                              or (x, E) x-coordinate (mm) of a given energy (MeV) is chosen method is "refpoint"
+    :param pC_per_Count: pC pre count on camera, from calibration
+    :param offset: offset of lanex. Positive = to low energy (larger s), negatives to high energy (lower s)
 
     Public attributes:
 
     """
     def __init__(self, image: np.ndarray, calibration: CalibrationData, spacing: float, pixel_per_mm: float,
-                 mrad_per_pix: float, ref_mode: str, ref_point: tuple, pC_per_count: float):
+                 mrad_per_pix: float, ref_mode: str, ref_point: tuple, pC_per_count: float, offset: float=0):
 
         self.pixel_per_mm = pixel_per_mm
         self.mrad_per_pix = mrad_per_pix
@@ -60,6 +62,7 @@ class DeconvolvedSpectrum:
         self.spacing = spacing
         self.pC_per_count = pC_per_count
         self._image_dimensions = image.shape
+        self.offset_px = offset*pixel_per_mm
 
         self.set_axes()
         self.set_dsde()
@@ -69,13 +72,13 @@ class DeconvolvedSpectrum:
     def set_axes(self):
         # x-axis: energy
         if self.ref_mode == "zero":
-            x_min = self.ref_point[0] - self._image_dimensions[1]
-            x_max = self.ref_point[0]
+            x_min = self.ref_point[0] + self.offset_px - self._image_dimensions[1]
+            x_max = self.ref_point[0] + self.offset_px
 
         elif self.ref_mode == "refpoint":
             s_ref = np.interp(self.ref_point[1], self.calibration.energy, self.calibration.s, 
                                         right=np.nan, left=np.nan)
-            x_min = int((s_ref - self.ref_point[0])*self.pixel_per_mm)
+            x_min = int((s_ref - self.ref_point[0])*self.pixel_per_mm) + self.offset_px
             x_max = x_min + self._image_dimensions[1]
 
         else:
@@ -118,6 +121,7 @@ class DeconvolvedSpectrum:
         data = self.image[data_cursors[0]:data_cursors[1], :]
         background = np.average(self.image[background_cursors[0]:background_cursors[1], :])
         data = data - background
+        data[data < 0] = 0
         self.integrated_spectrum = (self.pC_per_count*self.pixel_per_mm*
                                     np.multiply(np.sum(data, axis=0), abs(self.dsdE)))
 
@@ -176,7 +180,7 @@ if __name__ == "__main__":
     #                                           "refpoint", (47.855, 10))
     # "zero" method
     deconvolved_spectrum = DeconvolvedSpectrum(spImage, calibration_data, 0.5, 20.408, 0.1, "zero", (1953, 635),
-                                               4.33e-6)
+                                               4.33e-6, 0)
     t0 = t.time()
     deconvolved_spectrum.deconvolve_data(spImage)
     print(f'Deconvolution time: {t.time()-t0} s')

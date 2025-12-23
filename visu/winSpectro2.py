@@ -6,17 +6,18 @@ Created on 2025/12/16
 Spectrum deconvolution + make data available
 """
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
-from PyQt6.QtWidgets import QLabel, QMainWindow, QFileDialog,QStatusBar, QCheckBox, QDoubleSpinBox, QSlider
+from PyQt6.QtWidgets import (QLabel, QMainWindow, QFileDialog,QStatusBar,
+                             QCheckBox, QDoubleSpinBox, QSlider, QPushButton, QLineEdit)
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
-from PyQt6.QtGui import QIcon, QShortcut
+from PyQt6.QtGui import QIcon, QShortcut, QFont
 from PIL import Image
 import sys
 import time
-import pyqtgraph as pg  # pyqtgraph
+import pyqtgraph as pg
 import numpy as np
-import qdarkstyle  # pip install qdarkstyle
+import qdarkstyle
 import os
 from scipy.signal import lfilter
 import pathlib
@@ -79,6 +80,18 @@ class WINSPECTRO(QMainWindow):
         #                   Global layout and geometry
         #####################################################################
 
+        # Toggle design
+        TogOff = self.icon+'Toggle_Off.png'
+        TogOn = self.icon+'Toggle_On.png'
+        TogOff = pathlib.Path(TogOff)
+        TogOff = pathlib.PurePosixPath(TogOff)
+        TogOn = pathlib.Path(TogOn)
+        TogOn = pathlib.PurePosixPath(TogOn)
+        self.setStyleSheet("QCheckBox::indicator{width: 30px;height: 30px;}"
+                           "QCheckBox::indicator:unchecked { image : url(%s);}"
+                           "QCheckBox::indicator:checked { image:  url(%s);}"
+                           "QCheckBox{font :10pt;}" % (TogOff, TogOn))
+
         # Horizontal box with LHS graphs, and RHS controls and indicators
         self.hbox = QHBoxLayout()
         MainWidget = QWidget()
@@ -93,43 +106,46 @@ class WINSPECTRO(QMainWindow):
         self.vbox2 = QVBoxLayout()
         self.vbox2widget = QWidget()
         self.vbox2widget.setLayout(self.vbox2)
-        self.vbox2widget.setFixedWidth(300)
+        self.vbox2widget.setFixedWidth(350)
         self.hbox.addWidget(self.vbox2widget)
 
         # Title
         title_layout = QGridLayout()
         self.vbox2.addLayout(title_layout)
         Title = QLabel('Controls and indicators')
+        Title.setFont(QFont('Arial', 14))
         ph_1 = QLabel()
         ph_2 = QLabel()
         title_layout.addWidget(ph_1, 0, 0)
         title_layout.addWidget(Title, 0, 1)
         title_layout.addWidget(ph_2, 0, 2)
 
-        # Grid layout for controls and indicators
-        self.grid_layout = QGridLayout()
 
-        self.vbox2.addLayout(self.grid_layout)  # add grid to RHS panel
-        self.vbox2.addStretch(1)
 
         #####################################################################
         #       Fill layout with graphs, controls and indicators
         #####################################################################
 
+
+
         # 2D plot (image histogram) in LHS vbox
         self.winImage = pg.GraphicsLayoutWidget()
         self.vbox1.addWidget(self.winImage)
 
-        self.spectrum_2D_image = self.winImage.addPlot()
+        # Add plot in column 0
+        self.spectrum_2D_image = self.winImage.addPlot(row=0, col=0)
         self.image_histogram = pg.ImageItem()
         self.spectrum_2D_image.addItem(self.image_histogram)
-        self.spectrum_2D_image.setContentsMargins(10, 10, 10, 10)
 
-        # Setup colours in 2D plot
+        # Setup histogram LUT
         self.hist = pg.HistogramLUTItem()
         self.hist.setImageItem(self.image_histogram)
-        self.hist.autoHistogramRange()
         self.hist.gradient.loadPreset('flame')
+
+        # Hide the actual plot region
+        self.hist.region.setVisible(False)  # Hides the draggable region
+        self.hist.vb.setVisible(False)  # Hides the ViewBox containing histogram
+        self.winImage.addItem(self.hist)
 
         # Setup 1D plot (dN/dE vs. E)
         self.graph_widget = pg.GraphicsLayoutWidget()
@@ -139,11 +155,36 @@ class WINSPECTRO(QMainWindow):
         self.dnde_image.setContentsMargins(10, 10, 10, 10)
 
         # Controls and indicators, labels
+        grid_layout_enable_controls = QGridLayout()
+        lock_controls = QLabel('Lock controls')
+        self.locked_unlocked = QLabel('Unlocked')
+        self.enable_controls = QCheckBox()
+        self.enable_controls.setChecked(True)
+        grid_layout_enable_controls.addWidget(lock_controls, 0, 0)
+        grid_layout_enable_controls.addWidget(self.enable_controls, 0, 1)
+        grid_layout_enable_controls.addWidget(self.locked_unlocked, 0, 2)
+        self.vbox2.addLayout(grid_layout_enable_controls)
+
+        grid_layout_config = QGridLayout()
+        self.config_path_button = QPushButton('Path : ')
+        self.config_path_button.setFixedWidth(50)
+        self.config_path_box = QLineEdit('spectrum analysis')
+        self.config_path_box.setMaximumHeight(60)
+        grid_layout_config.addWidget(self.config_path_button, 0, 0)
+        grid_layout_config.addWidget(self.config_path_box, 0, 1)
+        self.vbox2.addLayout(grid_layout_config)
 
         self.flip_image = QCheckBox('Deflect.: R to L?', self)
         self.flip_image.setChecked(True)
 
-        cutoff_energies = QLabel('Cutoff energies (MeV)')
+        lanex_offset_label = QLabel('Lanex Offset (+ to low E)')
+        self.lanex_offset_mm_control = QDoubleSpinBox()
+        self.lanex_offset_mm_control.setValue(0)
+        self.lanex_offset_mm_control.setSingleStep(.1)
+        self.lanex_offset_mm_control.setMinimum(-100.)
+        self.lanex_offset_mm = self.lanex_offset_mm_control.value()
+
+        cutoff_energies_label = QLabel('Cutoff energies (MeV)')
         self.min_cutoff_energy_control = QDoubleSpinBox()  # for the value
         self.min_cutoff_energy_control.setValue(10)
         self.min_cutoff_energy = self.min_cutoff_energy_control.value()
@@ -157,81 +198,83 @@ class WINSPECTRO(QMainWindow):
         self.max_cutoff_energy_control.setSingleStep(10)
 
         # Fill grid with controls and indicators
-
-        self.grid_layout.addWidget(QLabel(), 1, 3)
+        self.grid_layout = QGridLayout()
+        self.vbox2.addLayout(self.grid_layout)  # add grid to RHS panel
+        self.vbox2.addStretch(1)
+        self.grid_layout.addWidget(QLabel(), 1, 2)
         self.grid_layout.addWidget(self.flip_image, 2, 0)
-        self.grid_layout.addWidget(cutoff_energies, 3, 0)
-        self.grid_layout.addWidget(self.min_cutoff_energy_control, 3, 1)
-        self.grid_layout.addWidget(self.max_cutoff_energy_control, 3, 2)
+        self.grid_layout.addWidget(cutoff_energies_label, 3, 0)
+        self.grid_layout.addWidget(self.min_cutoff_energy_control, 3, 2)
+        self.grid_layout.addWidget(self.max_cutoff_energy_control, 3, 3)
+        self.grid_layout.addWidget(lanex_offset_label, 4, 0)
+        self.grid_layout.addWidget(self.lanex_offset_mm_control, 4, 3)
 
-        # Brightness
-        grid_layout_brightness = QGridLayout()
-        grid_layout_brightness.addWidget(QLabel(), 0, 0)  # skip a line
-        brightnessLabel = QLabel("Brightness:")
-        grid_layout_brightness.addWidget(brightnessLabel, 1, 0)
-        self.brightnessSlider = QSlider(Qt.Orientation.Horizontal)
-        self.brightnessSlider.setRange(0, 100)
-        self.brightnessSlider.setValue(50)
-        grid_layout_brightness.addWidget(self.brightnessSlider, 2, 0)
-        self.brightnessBox = QDoubleSpinBox()
-        self.brightnessBox.setRange(0, 100)
-        self.brightnessBox.setValue(self.brightnessSlider.value())
-        grid_layout_brightness.addWidget(self.brightnessBox, 2, 1)
-        self.vbox2.addLayout(grid_layout_brightness)
 
     #####################################################################
     #                       Interface actions
     #####################################################################
 
-    def action_button(self):
-        self.brightnessSlider.valueChanged.connect(self.updateBrightness)
-        self.brightnessBox.valueChanged.connect(self.updateBrightnessBox)
+    def action_button(self)->None:
         self.min_cutoff_energy_control.valueChanged.connect(self.change_energy_bounds)
         self.max_cutoff_energy_control.valueChanged.connect(self.change_energy_bounds)
+        self.lanex_offset_mm_control.valueChanged.connect(self.change_lanex_offset_mm)
+        self.enable_controls.stateChanged.connect(self.enable_disable_controls)
 
-    def change_energy_bounds(self):
+
+    def enable_disable_controls(self):
+        '''
+        Enable or disable elements on interface
+        :return:
+        '''
+        if self.enable_controls.isChecked():
+            self.locked_unlocked.setText('Unlocked')
+        else:
+            self.locked_unlocked.setText('Locked')
+        self.min_cutoff_energy_control.setEnabled(self.enable_controls.isChecked())
+        self.max_cutoff_energy_control.setEnabled(self.enable_controls.isChecked())
+        self.flip_image.setEnabled(self.enable_controls.isChecked())
+        self.lanex_offset_mm_control.setEnabled(self.enable_controls.isChecked())
+        self.config_path_button.setEnabled(self.enable_controls.isChecked())
+        self.config_path_box.setEnabled(self.enable_controls.isChecked())
+
+    def change_energy_bounds(self)->None:
+        '''
+        Change energy bouds for spectrum statistics and integration
+        :return: None
+        '''
         self.min_cutoff_energy = self.min_cutoff_energy_control.value()
         self.max_cutoff_energy = self.max_cutoff_energy_control.value()
 
-    def updateBrightness(self, val):
-        self.brightnessBox.setValue(self.brightnessSlider.value())
-        # brightness levels
-        levels = self.image_histogram.getLevels()
-        if levels[0] is None:
-            self.base_xmin = float(self.data.min())
-            self.base_xmax = float(self.data.max())
-        else:
-            self.base_xmin = float(levels[0])
-            self.base_xmax = float(levels[1])
-        xmin = self.base_xmin
+    def change_lanex_offset_mm(self)->None:
+        '''
+        Change offset with respect to zero or reference point (manual offset or motorized)
+        :return: None
+        '''
+        self.lanex_offset_mm = self.lanex_offset_mm_control.value()
+        self.dnde_image.clear()
+        self.load_calib()
+        self.graph_setup()
 
-        span = self.base_xmax - self.base_xmin
-        factor = (val - 50) / 50.0
-        xmax = self.base_xmax - factor * span
 
-        if xmax <= xmin:
-            xmax = xmin + 1e-9
-
-        self.image_histogram.setLevels([xmin, xmax])
-        self.hist.setHistogramRange(xmin, xmax)
-
-    def updateBrightnessBox(self):
-        self.brightnessSlider.setValue(int(self.brightnessBox.value()))
-        self.updateBrightness(self.brightnessBox.value())
+    #####################################################################
+    #                  Setup calibration for deconvolution
+    #####################################################################
 
     def load_calib(self):
         # Load calibration for spectrum deconvolution
         p = pathlib.Path(__file__)
         self.deconv_calib = str(p.parent) + sepa + 'spectrum_analysis' + sepa
-        self.calibration_data = Deconvolve.CalibrationData(cal_path=self.deconv_calib + 'dsdE_Small_LHC.txt')
+        self.calibration_data = Deconvolve.CalibrationData(cal_path=self.deconv_calib + 'dsdE_default.txt')
+        self.calibration_data_json = None
         # Create initialization object for spectrum deconvolution
         initImage = Deconvolve.spectrum_image(im_path=self.deconv_calib +
                                                       'magnet0.4T_Soectrum_isat4.9cm_26bar_gdd25850_HeAr_0002.TIFF',
                                               revert=True)
         self.deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(initImage, self.calibration_data,
-                                                                   0.5, 20.408,
-                                                                   0.1, "zero",
-                                                                   (1953, 635), 4.33e-6)
+                                                                   0.5, 20.408, 0.1,
+                                                                   "zero", (1953, 635),
+                                                                   4.33e-6,
+                                                                   offset= self.lanex_offset_mm_control.value())
 
     def graph_setup(self):
 
@@ -249,6 +292,11 @@ class WINSPECTRO(QMainWindow):
         self.dnde_image.setLabel('left', 'dN/dE (pC/MeV)')
 
 
+
+    #####################################################################
+    #                       Setup DiagServ signal
+    #####################################################################
+
     def signal_setup(self):
 
         if self.parent is not None:
@@ -256,26 +304,30 @@ class WINSPECTRO(QMainWindow):
             self.parent.signalSpectro.connect(self.Display)
             self.parent.signalSpectroList.connect(self.spectro_dict)
 
+    #####################################################################
+    #       Display and generate data for DiagServ (dictionary)
+    #####################################################################
     def Display(self, data):
 
         # Deconvolve and display 2D data
-        self.deconvolved_spectrum.deconvolve_data(np.flip(data.T, axis=1))
+        if self.flip_image.isChecked():
+            self.deconvolved_spectrum.deconvolve_data(np.flip(data.T, axis=1))
+        else:
+            self.deconvolved_spectrum.deconvolve_data(data.T)
         self.image_histogram.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
 
         # Integrate over angle and show graph
         self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
+        #self.update_image_levels()
         self.dnde_image.plot(self.deconvolved_spectrum.energy, self.deconvolved_spectrum.integrated_spectrum)
-        self.updateBrightness(self.brightnessBox.value())
 
     def spectro_dict(self, temp_dataArray):
-        # Creation of dictionary to pass to diagServ ; to be integrated to another function, with another signal
-        # temp_dataArray : [data from parent, shot number] ; added data from parent in case we want to compute but
-        # not display!
-        # Only process data without noise! Maybe make function that automatically removes noise?
+        # Creation of dictionary to pass to diagServ ; cut energy from interface to remove noise
         self.spectro_data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy,
                                                               self.deconvolved_spectrum.integrated_spectrum,
-                                                              temp_dataArray[1], energy_bounds=[15, 100])
-        self.signalSpectroDict.emit(self.spectro_data_dict)
+                                                              temp_dataArray[1],
+                                                              energy_bounds=[self.min_cutoff_energy, self.max_cutoff_energy])
+        self.signalSpectroDict.emit(self.spectro_data_dict) # Signal for DiagServ
 
 
 if __name__ == "__main__":

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/visu.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/visu.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/winFFT.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winFFT.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/winPointing.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winPointing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/winSpectro2.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSpectro2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/winSuppE.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSuppE.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="377kIM9MsYpc9HL5b3zWZ9ovv7J" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.dummyTest.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "git-widget-placeholder": "master",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.142" />
+        <option value="bundled-python-sdk-f2b7a9f6281b-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.142" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="" />
+      <created>1766261422787</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1766261422787</updated>
+      <workItem from="1766261428423" duration="1367000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/visu_diagServ_2_spectra$dummyTest.coverage" NAME="dummyTest Coverage Results" MODIFIED="1766262571809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../camera_dummyClass" />
+  </component>
+</project>

@@ -240,7 +240,7 @@ class WINSPECTRO(QMainWindow):
     def Display_LHC(self, data):
         self.dataOrg = data
         deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(self.dataOrg, calibration_data, 0.5, 20.408, 0.1, "zero",
-                                                              (1953, 635), 4.33e-6)
+                                                              (1953, 635), 4.33e-6, 0)
         deconvolved_spectrum.deconvolve_data(self.dataOrg)
         deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
     

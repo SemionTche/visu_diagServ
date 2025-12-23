@@ -24,7 +24,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 
-import pylab
+#import pylab
 import pyqtgraph as pg  # pip install pyqtgraph (https://github.com/pyqtgraph/pyqtgraph.git)
 
 
@@ -646,7 +646,7 @@ class SEEFFT(QWidget):
         
         if self.maxGraphBox.isChecked():
             dataF = gaussian_filter(self.data, 5)
-            (self.xc, self.yc) = pylab.unravel_index(dataF.argmax(), self.data.shape)  # take the max ndimage.measurements.center_of_mass(dataF)#
+            (self.xc, self.yc) = np.unravel_index(dataF.argmax(), self.data.shape)  # take the max ndimage.measurements.center_of_mass(dataF)#
             self.vLine.setPos(self.xc)
             self.hLine.setPos(self.yc)
             

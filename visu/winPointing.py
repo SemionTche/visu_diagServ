@@ -17,7 +17,7 @@ import time
 import pyqtgraph as pg  # pyqtgraph biblio permettent l'affichage 
 import numpy as np
 import qdarkstyle  # pip install qdakstyle https://github.com/ColinDuquesnoy/QDarkStyleSheet  sur conda
-import pylab
+#import pylab
 import os
 from scipy.ndimage.filters import gaussian_filter  # pour la reduction du bruit
 # from scipy.interpolate import splrep, sproot # pour calcul fwhm et fit 
@@ -226,7 +226,8 @@ class WINPOINTING(QMainWindow):
             self.label = 'com'
 
         else:
-            (self.xec, self.yec) = pylab.unravel_index(dataF.argmax(), self.data.shape)
+            (self.xec, self.yec) = np.unravel_index(dataF.argmax(), self.data.shape)
+            #Replaced pylab.unravel_index by np.unravel_index a vernier 20/12/25
             self.label = 'max'
 
         

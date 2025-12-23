@@ -17,7 +17,7 @@ import time
 import pyqtgraph as pg  # pyqtgraph biblio permettent l'affichage
 import numpy as np
 import qdarkstyle  # pip install qdakstyle https://github.com/ColinDuquesnoy/QDarkStyleSheet  sur conda
-import pylab
+#import pylab
 import os
 from scipy.ndimage.filters import gaussian_filter  # pour la reduction du bruit
 from scipy.interpolate import splrep, sproot  # pour calcul fwhm et fit
@@ -614,7 +614,7 @@ class WINENCERCLED(QWidget):
     def computeCentroid(self):
         if self.checkBoxAuto.isChecked():
             dataF = gaussian_filter(self.data, 5) # apply a gaussian filter
-            (self.xec, self.yec) = pylab.unravel_index(dataF.argmax(), self.data.shape) # get the maximum 
+            (self.xec, self.yec) = np.unravel_index(dataF.argmax(), self.data.shape) # get the maximum
             self.vLine.setPos(self.xec) # set the cursors
             self.hLine.setPos(self.yec)   
             self.circle.setPos([self.xec - self.rxFixed, 

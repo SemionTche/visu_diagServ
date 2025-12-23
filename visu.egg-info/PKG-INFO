@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: visu
 Version: 2025.6
 Summary: Data visualization
@@ -19,6 +19,14 @@ Requires-Dist: pyqtgraph
 Requires-Dist: scipy
 Requires-Dist: six
 Requires-Dist: zmq
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: summary
 
 # Visu
 

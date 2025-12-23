@@ -32,6 +32,7 @@ visu/winMath.py
 visu/winMeas.py
 visu/winPointing.py
 visu/winSpectro.py
+visu/winSpectro2.py
 visu/winSuppE.py
 visu/winSuppE_achive.py
 visu/winZoom.py
