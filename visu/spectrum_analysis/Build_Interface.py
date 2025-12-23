@@ -282,7 +282,14 @@ class Spectrometer_Interface(QMainWindow):
         self.enable_controls.stateChanged.connect(self.enable_disable_controls)
         self.flip_image.stateChanged.connect(self.clear_graph)
         self.reference_method.currentTextChanged.connect(self.update_refpoint)
+        self.min_bkg_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
+        self.max_bkg_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
+        self.min_int_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
+        self.max_int_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
         self.clear_graph_ctl.clicked.connect(self.clear_graph)
+
+    def change_integration_bounds(self):
+        pass
 
     def update_refpoint(self):
         if self.reference_method.currentText() == "Zero":
