@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGr
 from PyQt6.QtWidgets import (QLabel, QMainWindow, QStatusBar, QComboBox, QAbstractSpinBox,
                              QCheckBox, QDoubleSpinBox,  QPushButton, QLineEdit)
 from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtCore import Qt
 import sys
 import pyqtgraph as pg
 import qdarkstyle
@@ -35,7 +36,7 @@ class Spectrometer_Interface(QMainWindow):
         self.setWindowIcon(QIcon(self.icon + 'LOA.png'))
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
         self.setWindowIcon(QIcon('./icons/LOA.png'))
-        self.setGeometry(100, 30, 1200, 650)
+        self.setGeometry(100, 30, 1200, 750)
 
         self.toolBar = self.addToolBar('tools')
         self.toolBar.setMovable(False)
@@ -64,7 +65,8 @@ class Spectrometer_Interface(QMainWindow):
         self.hbox = QHBoxLayout()
         MainWidget = QWidget()
         MainWidget.setLayout(self.hbox)
-        blank_space = QLabel('')
+        b0 = QLabel('')
+        b1 = QLabel('')
         self.setCentralWidget(MainWidget)
 
         # LHS vertical box with stacked graphs
@@ -79,13 +81,10 @@ class Spectrometer_Interface(QMainWindow):
         self.hbox.addWidget(self.vbox2widget)
 
         # Title
-        title_layout = QGridLayout()
-        self.vbox2.addLayout(title_layout)
-        Title = QLabel('Controls and indicators')
-        Title.setFont(QFont('Arial', 14))
-        title_layout.addWidget(blank_space, 0, 0)
-        title_layout.addWidget(Title, 0, 1)
-        title_layout.addWidget(blank_space, 0, 2)
+        title_label = QLabel('Controls and indicators')
+        title_label.setFont(QFont('Arial', 14))
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.vbox2.addWidget(title_label)
 
         #####################################################################
         #       Fill layout with graphs, controls and indicators
@@ -139,13 +138,11 @@ class Spectrometer_Interface(QMainWindow):
         # E, ds/dE, s config
         ######################
 
-        grid_layout_config_title = QGridLayout()
         calibration_label = QLabel('Calibration')
         calibration_label.setFont(QFont('Arial', 11))
-        grid_layout_config_title.addWidget(blank_space, 0, 0)
-        grid_layout_config_title.addWidget(calibration_label, 0, 1)
-        grid_layout_config_title.addWidget(blank_space, 0, 2)
-        self.vbox2.addLayout(grid_layout_config_title)
+        calibration_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.vbox2.addWidget(calibration_label)
+
 
         grid_layout_config = QGridLayout()
         self.config_path_button = QPushButton('Path : ')
@@ -189,20 +186,20 @@ class Spectrometer_Interface(QMainWindow):
 
 
         grid_layout_calib.addWidget(flip_image_label, 0, 0)
-        grid_layout_calib.addWidget(self.flip_image, 0, 1)
+        grid_layout_calib.addWidget(self.flip_image, 0, 2)
         grid_layout_calib.addWidget(lanex_offset_label, 1, 0)
-        grid_layout_calib.addWidget(self.lanex_offset_mm_ctl, 1, 1)
+        grid_layout_calib.addWidget(self.lanex_offset_mm_ctl, 1, 2)
         grid_layout_calib.addWidget(px_per_mm_label, 2, 0)
-        grid_layout_calib.addWidget(self.px_per_mm_ctl, 2, 1)
+        grid_layout_calib.addWidget(self.px_per_mm_ctl, 2, 2)
         grid_layout_calib.addWidget(mrad_per_px_label, 3, 0)
-        grid_layout_calib.addWidget(self.mrad_per_px_ctl, 3, 1)
+        grid_layout_calib.addWidget(self.mrad_per_px_ctl, 3, 2)
         grid_layout_calib.addWidget(reference_label, 4, 0)
-        grid_layout_calib.addWidget(self.reference_method, 4, 1)
+        grid_layout_calib.addWidget(self.reference_method, 4, 2)
         grid_layout_calib.addWidget(self.reference_pts_label, 5, 0)
         grid_layout_calib.addWidget(self.refpoint_x_or_energy, 5, 1)
         grid_layout_calib.addWidget(self.refpoint_y_or_s, 5, 2)
         grid_layout_calib.addWidget(pC_per_count_label, 6, 0)
-        grid_layout_calib.addWidget(self.pC_per_count_ctl, 6, 1)
+        grid_layout_calib.addWidget(self.pC_per_count_ctl, 6, 2)
         self.vbox2.addLayout(grid_layout_calib)
 
         self.vbox2.addStretch(1)
@@ -211,33 +208,60 @@ class Spectrometer_Interface(QMainWindow):
         #   Post-processing
         ######################
 
+        postproc_label = QLabel('Post-Processing')
+        postproc_label.setFont(QFont('Arial', 11))
+        postproc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.vbox2.addWidget(postproc_label)
+
         cutoff_energies_label = QLabel('Cutoff energies (MeV)')
         self.min_cutoff_energy_ctl = Numeric_IO(min=0, max=10000, incr=1, value=10, enabled=True)
         self.max_cutoff_energy_ctl = Numeric_IO(min=0, max=10000, incr=1, value=150, enabled=True)
 
+        integration_label = QLabel('Integrated rows (mrad)')
+        self.min_int_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=600)
+        self.max_int_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=670)
+
+        background_label = QLabel('Background rows (mrad)')
+        self.min_bkg_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=750)
+        self.max_bkg_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=850)
 
         energy_resolution_label = QLabel('Energy resolution (MeV)')
         self.energy_resolution_ctl = Numeric_IO(min=0.1, max=10, incr=0.5, value=0.5, enabled=True)
 
-
-        mean_energy_label = QLabel('Mean energy')
+        mean_energy_label = QLabel('Mean energy (MeV)')
         self.mean_energy_ind = Numeric_IO(enabled=False)
 
-        stdev_energy_label = QLabel('Energy Std Dev')
+        stdev_energy_label = QLabel('Energy Std Dev (MeV)')
         self.stdev_energy_ind = Numeric_IO(enabled=False)
+
+        charge_label = QLabel('Estimated charge (pC)')
+        self.charge_ind = Numeric_IO(enabled=False)
 
         post_proc_layout = QGridLayout()
         post_proc_layout.addWidget(QLabel(), 1, 2)
         post_proc_layout.addWidget(cutoff_energies_label, 3, 0)
         post_proc_layout.addWidget(self.min_cutoff_energy_ctl, 3, 2)
         post_proc_layout.addWidget(self.max_cutoff_energy_ctl, 3, 3)
-        post_proc_layout.addWidget(energy_resolution_label, 5, 0)
-        post_proc_layout.addWidget(self.energy_resolution_ctl, 5, 3)
-        post_proc_layout.addWidget(mean_energy_label, 6, 0)
-        post_proc_layout.addWidget(self.mean_energy_ind, 6, 3)
-        post_proc_layout.addWidget(stdev_energy_label, 7, 0)
-        post_proc_layout.addWidget(self.stdev_energy_ind, 7, 3)
+
+        post_proc_layout.addWidget(integration_label, 4, 0)
+        post_proc_layout.addWidget(self.min_int_mrad_ctl, 4, 2)
+        post_proc_layout.addWidget(self.max_int_mrad_ctl, 4, 3)
+
+        post_proc_layout.addWidget(background_label, 5, 0)
+        post_proc_layout.addWidget(self.min_bkg_mrad_ctl, 5, 2)
+        post_proc_layout.addWidget(self.max_bkg_mrad_ctl, 5, 3)
+
+        post_proc_layout.addWidget(energy_resolution_label, 6, 0)
+        post_proc_layout.addWidget(self.energy_resolution_ctl, 6, 3)
+        post_proc_layout.addWidget(mean_energy_label, 7, 0)
+        post_proc_layout.addWidget(self.mean_energy_ind, 7, 3)
+        post_proc_layout.addWidget(stdev_energy_label, 8, 0)
+        post_proc_layout.addWidget(self.stdev_energy_ind, 8, 3)
+        post_proc_layout.addWidget(charge_label, 9, 0)
+        post_proc_layout.addWidget(self.charge_ind, 9, 3)
         self.vbox2.addLayout(post_proc_layout)
+
+        self.vbox2.addStretch(1)
 
         ######################
         #  Interface comfort

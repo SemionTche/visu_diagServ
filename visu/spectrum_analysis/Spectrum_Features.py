@@ -26,7 +26,7 @@ def weighted_avg_and_std(energy: np.ndarray, data_counts: np.ndarray):
 def build_dict(energy: np.ndarray, data: np.ndarray, shotNum: int, energy_bounds):
     low, high = find_indices(energy, data, energy_bounds)
     mean_energy, std_energy = weighted_avg_and_std(energy[low:high],data[low:high])
-    data_dict = {('Std energy', std_energy),
-                 ('Mean energy', mean_energy),
-                 ('Shot number', shotNum)}
+    data_dict = dict((('Std energy', std_energy),
+                      ('Mean energy', mean_energy),
+                      ('Shot number', shotNum)))
     return data_dict

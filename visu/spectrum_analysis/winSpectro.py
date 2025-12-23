@@ -123,6 +123,8 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
                                                               temp_dataArray[1],
                                                               energy_bounds=[self.min_cutoff_energy_ctl.value(),
                                                                              self.max_cutoff_energy_ctl.value()])
+        self.mean_energy_ind.setValue(self.spectro_data_dict['Mean energy'])
+        self.stdev_energy_ind.setValue(self.spectro_data_dict['Std energy'])
         self.signalSpectroDict.emit(self.spectro_data_dict) # Signal for DiagServ
 
 

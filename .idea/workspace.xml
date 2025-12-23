@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/diagServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/diagServer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Deconvolve_Spectrum.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Deconvolve_Spectrum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/winSpectro.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/winSpectro.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
