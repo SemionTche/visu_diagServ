@@ -164,6 +164,13 @@ class Spectrometer_Interface(QMainWindow):
         self.max_cutoff_energy_control.setMinimum(50)
         self.max_cutoff_energy_control.setSingleStep(10)
 
+        energy_resolution_label = QLabel('Energy resolution (MeV)')
+        self.energy_resolution_ctl = QDoubleSpinBox()
+        self.energy_resolution_ctl.setValue(0.5)
+        self.max_cutoff_energy_control.setMinimum(0.1)
+        self.max_cutoff_energy_control.setMaximum(10)
+        self.max_cutoff_energy_control.setSingleStep(0.5)
+
         # Fill grid with controls and indicators
         self.grid_layout = QGridLayout()
         self.vbox2.addLayout(self.grid_layout)  # add grid to RHS panel

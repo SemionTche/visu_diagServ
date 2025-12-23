@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visu/winSpectro_old.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/visual.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/visual.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/visualElectrons.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/visualElectrons.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/winSpectro.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSpectro.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/winSpectro2.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSpectro2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
