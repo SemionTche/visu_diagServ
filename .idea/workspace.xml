@@ -1,32 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/visu.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/visu.egg-info/SOURCES.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/winFFT.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winFFT.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/winPointing.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winPointing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visu/winSpectro_old.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/visu_diagServ_2-spectra.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/visual.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/visual.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/visualElectrons.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/visualElectrons.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/winSpectro.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSpectro.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visu/winSpectro2.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSpectro2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visu/winSuppE.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/winSuppE.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "aline-vernier"
+  }
 }]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/SemionTche/visu_diagServ.git",
+    "accountId": "c8490a58-8846-447a-82c2-e7aff874e79c"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="377kIM9MsYpc9HL5b3zWZ9ovv7J" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -35,25 +56,34 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.Build_Interface.executor": "Run",
     "Python.dummyTest.executor": "Run",
+    "Python.winSpectro.executor": "Run",
+    "Python.winSpectro2.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/APPLI/Python/visu_diagServ/visu",
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\APPLI\Python\visu_diagServ\visu" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.142" />
-        <option value="bundled-python-sdk-f2b7a9f6281b-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.142" />
+        <option value="bundled-python-sdk-f5635417b835-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
       </set>
     </attachedChunks>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="" />

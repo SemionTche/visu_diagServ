@@ -51,7 +51,7 @@ from visu.winHist import HISTORY
 from visu import aboutWindows
 from visu.winZoom import ZOOM
 from visu.winCrop import WINCROP
-from visu.winSpectro import WINSPECTRO
+from visu.winSpectro_old import WINSPECTRO
 # try :
 #     from visu.Win3D import GRAPH3D #conda install pyopengl
 # except :

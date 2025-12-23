@@ -3,64 +3,38 @@
 """
 Created on 2025/12/16
 @author: Aline Vernier
-Spectrum deconvolution + make data available
+Build Spectrometer Interface
 """
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
 from PyQt6.QtWidgets import (QLabel, QMainWindow, QFileDialog, QStatusBar,
-                             QCheckBox, QDoubleSpinBox, QSlider, QPushButton, QLineEdit)
+                             QCheckBox, QDoubleSpinBox,  QPushButton, QLineEdit)
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
-from PyQt6.QtGui import QIcon, QShortcut, QFont
+from PyQt6.QtGui import QIcon, QFont
 import sys
 import pyqtgraph as pg
-import numpy as np
 import qdarkstyle
 import os
 import pathlib
 
-from visu.spectrum_analysis import Deconvolve_Spectrum as Deconvolve
-from visu.spectrum_analysis import Spectrum_Features
-
-sys.path.insert(1, 'spectrum_analysis')
 sepa = os.sep
 
-class WINSPECTRO(QMainWindow):
-    signalSpectroDict = QtCore.pyqtSignal(object)
+class Spectrometer_Interface(QMainWindow):
 
-    def __init__(self, parent=None, file=None, conf=None, name='VISU', **kwds):
-        '''
-
-        :param parent:
-        :param file:
-        :param conf:
-        :param name:
-        :param kwds:
-        '''
-        
+    def __init__(self):
         super().__init__()
-        self.name = name
-        self.parent = parent
         p = pathlib.Path(__file__)
-        self.icon = str(p.parent) + sepa + 'icons' + sepa
-        self.data_dict = {}
-
-        # Main window setup
+        self.icon = str(p.parent.parent) + sepa + 'icons' + sepa
+        print(self.icon)
         self.setup()
-        self.action_button()
-
-        # Load calibration data
-        self.load_calib()
-        self.graph_setup()
-        self.signal_setup()
 
     def setup(self):
-
         #####################################################################
         #                   Window setup
         #####################################################################
         self.isWinOpen = False
-        self.setWindowTitle('Electron spectrometer')
+        self.setWindowTitle('Electrons spectrometer')
         self.setWindowIcon(QIcon(self.icon + 'LOA.png'))
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
         self.setWindowIcon(QIcon('./icons/LOA.png'))
@@ -78,8 +52,8 @@ class WINSPECTRO(QMainWindow):
         #####################################################################
 
         # Toggle design
-        TogOff = self.icon+'Toggle_Off.png'
-        TogOn = self.icon+'Toggle_On.png'
+        TogOff = self.icon + 'Toggle_Off.png'
+        TogOn = self.icon + 'Toggle_On.png'
         TogOff = pathlib.Path(TogOff)
         TogOff = pathlib.PurePosixPath(TogOff)
         TogOn = pathlib.Path(TogOn)
@@ -117,13 +91,9 @@ class WINSPECTRO(QMainWindow):
         title_layout.addWidget(Title, 0, 1)
         title_layout.addWidget(ph_2, 0, 2)
 
-
-
         #####################################################################
         #       Fill layout with graphs, controls and indicators
         #####################################################################
-
-
 
         # 2D plot (image histogram) in LHS vbox
         self.winImage = pg.GraphicsLayoutWidget()
@@ -206,17 +176,15 @@ class WINSPECTRO(QMainWindow):
         self.grid_layout.addWidget(lanex_offset_label, 4, 0)
         self.grid_layout.addWidget(self.lanex_offset_mm_control, 4, 3)
 
+        #####################################################################
+        #                       Interface actions
+        #####################################################################
 
-    #####################################################################
-    #                       Interface actions
-    #####################################################################
-
-    def action_button(self)->None:
+    def action_button(self) -> None:
         self.min_cutoff_energy_control.valueChanged.connect(self.change_energy_bounds)
         self.max_cutoff_energy_control.valueChanged.connect(self.change_energy_bounds)
         self.lanex_offset_mm_control.valueChanged.connect(self.change_lanex_offset_mm)
         self.enable_controls.stateChanged.connect(self.enable_disable_controls)
-
 
     def enable_disable_controls(self):
         '''
@@ -234,16 +202,16 @@ class WINSPECTRO(QMainWindow):
         self.config_path_button.setEnabled(self.enable_controls.isChecked())
         self.config_path_box.setEnabled(self.enable_controls.isChecked())
 
-    def change_energy_bounds(self)->None:
+    def change_energy_bounds(self) -> None:
         '''
         Change energy bouds for spectrum statistics and integration
         :return: None
         '''
         self.min_cutoff_energy = self.min_cutoff_energy_control.value()
         self.max_cutoff_energy = self.max_cutoff_energy_control.value()
+        print(f'Changed bounds')
 
-
-    def change_lanex_offset_mm(self)->None:
+    def change_lanex_offset_mm(self) -> None:
         '''
         Change offset with respect to zero or reference point (manual offset or motorized)
         :return: None
@@ -253,86 +221,11 @@ class WINSPECTRO(QMainWindow):
         self.load_calib()
         self.graph_setup()
 
-
-    #####################################################################
-    #                  Setup calibration for deconvolution
-    #####################################################################
-
-    def load_calib(self):
-        # Load calibration for spectrum deconvolution
-        p = pathlib.Path(__file__)
-        self.deconv_calib = str(p.parent) + sepa + 'spectrum_analysis' + sepa
-        self.calibration_data = Deconvolve.CalibrationData(cal_path=self.deconv_calib + 'dsdE_default.txt')
-        self.calibration_data_json = None
-        # Create initialization object for spectrum deconvolution
-        initImage = Deconvolve.spectrum_image(im_path=self.deconv_calib +
-                                                      'magnet0.4T_Soectrum_isat4.9cm_26bar_gdd25850_HeAr_0002.TIFF',
-                                              revert=True)
-        self.deconvolved_spectrum = Deconvolve.DeconvolvedSpectrum(initImage, self.calibration_data,
-                                                                   0.5, 20.408, 0.1,
-                                                                   "zero", (1953, 635),
-                                                                   4.33e-6,
-                                                                   offset= self.lanex_offset_mm_control.value())
-
-    def graph_setup(self):
-
-        self.spectrum_2D_image.setLabel('bottom', 'Energy (MeV)')
-        self.spectrum_2D_image.setLabel( 'left', 'mrad ')
-
-        self.image_histogram.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
-        self.image_histogram.setRect(
-            self.deconvolved_spectrum.energy[0],  # x origin
-            self.deconvolved_spectrum.angle[0],  # y origin
-            self.deconvolved_spectrum.energy[-1] - self.deconvolved_spectrum.energy[0],  # width
-            self.deconvolved_spectrum.angle[-1] - self.deconvolved_spectrum.angle[0] ) # height
-
-        self.dnde_image.setLabel('bottom', 'Energy')
-        self.dnde_image.setLabel('left', 'dN/dE (pC/MeV)')
-
-
-
-    #####################################################################
-    #                       Setup DiagServ signal
-    #####################################################################
-
-    def signal_setup(self):
-
-        if self.parent is not None:
-            # if signal emit in another thread (see visual)
-            self.parent.signalSpectro.connect(self.Display)
-            self.parent.signalSpectroList.connect(self.spectro_dict)
-
-    #####################################################################
-    #       Display and generate data for DiagServ (dictionary)
-    #####################################################################
-    def Display(self, data):
-
-        # Deconvolve and display 2D data
-        if self.flip_image.isChecked():
-            self.deconvolved_spectrum.deconvolve_data(np.flip(data.T, axis=1))
-        else:
-            self.deconvolved_spectrum.deconvolve_data(data.T)
-        self.image_histogram.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
-
-        # Integrate over angle and show graph
-        self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
-        #self.update_image_levels()
-        self.dnde_image.plot(self.deconvolved_spectrum.energy, self.deconvolved_spectrum.integrated_spectrum)
-
-    def spectro_dict(self, temp_dataArray):
-        # Creation of dictionary to pass to diagServ ; cut energy from interface to remove noise
-        self.spectro_data_dict = Spectrum_Features.build_dict(self.deconvolved_spectrum.energy,
-                                                              self.deconvolved_spectrum.integrated_spectrum,
-                                                              temp_dataArray[1],
-                                                              energy_bounds=[self.min_cutoff_energy, self.max_cutoff_energy])
-        self.signalSpectroDict.emit(self.spectro_data_dict) # Signal for DiagServ
-
-
 if __name__ == "__main__":
 
     appli = QApplication(sys.argv)
     appli.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt6'))
     file= str(pathlib.Path(__file__).parents[0])+'/tir_025.TIFF'
-    e =WINSPECTRO(name='VISU', file=file)
+    e =Spectrometer_Interface()
     e.show()
     appli.exec_()
