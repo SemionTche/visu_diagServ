@@ -6,7 +6,7 @@ Created on 2025/12/16
 Build Spectrometer Interface - GUI only
 """
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget, QHBoxLayout, QGridLayout
-from PyQt6.QtWidgets import (QLabel, QMainWindow, QStatusBar, QComboBox, QAbstractSpinBox,
+from PyQt6.QtWidgets import (QLabel, QMainWindow, QStatusBar, QComboBox,
                              QCheckBox, QDoubleSpinBox,  QPushButton, QLineEdit)
 from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtCore import Qt
@@ -82,7 +82,7 @@ class Spectrometer_Interface(QMainWindow):
         self.hbox.addWidget(self.vbox2widget)
 
         # Title
-        title_label = QLabel('Controls and indicators')
+        title_label = QLabel('Low energy spectrum')
         title_label.setFont(QFont('Arial', 14))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.vbox2.addWidget(title_label)
@@ -285,6 +285,9 @@ class Spectrometer_Interface(QMainWindow):
         self.flip_image.stateChanged.connect(self.clear_graph)
         self.reference_method.currentTextChanged.connect(self.update_refpoint)
         self.min_int_mrad_ctl.valueChanged.connect(self.clear_bounds_cache)
+        self.max_int_mrad_ctl.valueChanged.connect(self.clear_bounds_cache)
+        self.min_bkg_mrad_ctl.valueChanged.connect(self.clear_bounds_cache)
+        self.max_bkg_mrad_ctl.valueChanged.connect(self.clear_bounds_cache)
         self.clear_graph_ctl.clicked.connect(self.clear_graph)
 
     def clear_bounds_cache(self):
@@ -337,6 +340,10 @@ class Spectrometer_Interface(QMainWindow):
         self.energy_resolution_ctl.setEnabled(self.enable_controls.isChecked())
         self.refpoint_x_or_energy.setEnabled(self.enable_controls.isChecked())
         self.refpoint_y_or_s.setEnabled(self.enable_controls.isChecked())
+        self.min_int_mrad_ctl.setEnabled((self.enable_controls.isChecked()))
+        self.max_int_mrad_ctl.setEnabled((self.enable_controls.isChecked()))
+        self.min_bkg_mrad_ctl.setEnabled((self.enable_controls.isChecked()))
+        self.max_bkg_mrad_ctl.setEnabled((self.enable_controls.isChecked()))
 
     def change_energy_bounds(self) -> None:
         '''

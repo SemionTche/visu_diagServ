@@ -70,7 +70,7 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
                                                                    self.reference_method.currentText(),
                                                                    (self.refpoint_x_or_energy.value(),
                                                                     self.refpoint_y_or_s.value()),
-                                                                   self.pC_per_count_ctl.value(),
+                                                                   self.pC_per_count_ctl.value()*1e-6,
                                                                    offset=self.lanex_offset_mm_ctl.value())
         self.image_dimensions = self.deconvolved_spectrum.image_dimensions
 
@@ -128,7 +128,8 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
         # Display values on interface
         self.mean_energy_ind.setValue(self.spectro_data_dict['Mean energy'])
         self.stdev_energy_ind.setValue(self.spectro_data_dict['Std energy'])
-        self.signalSpectroDict.emit(self.spectro_data_dict)  # Signal for DiagServ
+        self.charge_ind.setValue(self.spectro_data_dict['Charge'])
+        self.signalSpectroDict.emit(self.spectro_data_dict)  # Signal for diagServ
 
 
 if __name__ == "__main__":
