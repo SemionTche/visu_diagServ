@@ -7,6 +7,9 @@
     <list default="true" id="e6d705c0-71c2-4608-b2a3-233cea6ef6e9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Build_Interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Deconvolve_Spectrum.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Deconvolve_Spectrum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/Spectrum_Features.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visu/spectrum_analysis/winSpectro.py" beforeDir="false" afterPath="$PROJECT_DIR$/visu/spectrum_analysis/winSpectro.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,18 +26,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "aline-vernier"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;aline-vernier&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/SemionTche/visu_diagServ.git",
-    "accountId": "c8490a58-8846-447a-82c2-e7aff874e79c"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SemionTche/visu_diagServ.git&quot;,
+    &quot;accountId&quot;: &quot;c8490a58-8846-447a-82c2-e7aff874e79c&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 0
@@ -44,25 +47,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.Build_Interface.executor": "Run",
-    "Python.Deconvolve_Spectrum.executor": "Run",
-    "Python.dummyTest.executor": "Run",
-    "Python.winSpectro.executor": "Run",
-    "Python.winSpectro2.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/APPLI/Python/visu_diagServ/visu/spectrum_analysis",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.Build_Interface.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Deconvolve_Spectrum.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dummyTest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.winSpectro.executor&quot;: &quot;Run&quot;,
+    &quot;Python.winSpectro2.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/APPLI/Python/visu_diagServ/visu/spectrum_analysis&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\APPLI\Python\visu_diagServ\visu" />

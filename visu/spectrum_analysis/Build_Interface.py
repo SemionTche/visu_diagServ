@@ -25,6 +25,7 @@ class Spectrometer_Interface(QMainWindow):
         p = pathlib.Path(__file__)
         self.icon = str(p.parent.parent) + sepa + 'icons' + sepa
         self.setup()
+        self._cache_setup()
         self.action_button()
 
     def setup(self):
@@ -218,12 +219,12 @@ class Spectrometer_Interface(QMainWindow):
         self.max_cutoff_energy_ctl = Numeric_IO(min=0, max=10000, incr=1, value=150, enabled=True)
 
         integration_label = QLabel('Integrated rows (mrad)')
-        self.min_int_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=600)
-        self.max_int_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=670)
+        self.min_int_mrad_ctl = Numeric_IO(min=-5000, max=5000, incr=1, value=0)
+        self.max_int_mrad_ctl = Numeric_IO(min=-5000, max=5000, incr=1, value=15)
 
         background_label = QLabel('Background rows (mrad)')
-        self.min_bkg_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=750)
-        self.max_bkg_mrad_ctl = Numeric_IO(min=0, max=10000, incr=1, value=850)
+        self.min_bkg_mrad_ctl = Numeric_IO(min=-5000, max=10000, incr=1, value=-40)
+        self.max_bkg_mrad_ctl = Numeric_IO(min=-5000, max=10000, incr=1, value=-35)
 
         energy_resolution_label = QLabel('Energy resolution (MeV)')
         self.energy_resolution_ctl = Numeric_IO(min=0.1, max=10, incr=0.5, value=0.5, enabled=True)
@@ -274,7 +275,8 @@ class Spectrometer_Interface(QMainWindow):
         #####################################################################
         #                       Interface actions
         #####################################################################
-
+    def _cache_setup(self):
+        self._bounds_cache = None
     def action_button(self) -> None:
         self.min_cutoff_energy_ctl.valueChanged.connect(self.change_energy_bounds)
         self.max_cutoff_energy_ctl.valueChanged.connect(self.change_energy_bounds)
@@ -282,16 +284,24 @@ class Spectrometer_Interface(QMainWindow):
         self.enable_controls.stateChanged.connect(self.enable_disable_controls)
         self.flip_image.stateChanged.connect(self.clear_graph)
         self.reference_method.currentTextChanged.connect(self.update_refpoint)
-        self.min_bkg_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
-        self.max_bkg_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
-        self.min_int_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
-        self.max_int_mrad_ctl.valueChanged.connect(self.change_integration_bounds)
+        self.min_int_mrad_ctl.valueChanged.connect(self.clear_bounds_cache)
         self.clear_graph_ctl.clicked.connect(self.clear_graph)
 
-    def change_integration_bounds(self):
-        pass
+    def clear_bounds_cache(self):
+        self._bounds_cache = None
+    def integration_bounds_dict(self) -> dict:
+        if self._bounds_cache is None:
+            px_bound = lambda value: round(value/self.mrad_per_px_ctl.value()+self.image_dimensions[0]/2)
+            min_int_px = px_bound(self.min_int_mrad_ctl.value())
+            max_int_px = px_bound(self.max_int_mrad_ctl.value())
+            min_bkg_px = px_bound(self.min_bkg_mrad_ctl.value())
+            max_bkg_px = px_bound(self.max_bkg_mrad_ctl.value())
+            self._bounds_cache = dict({('bkg', (min_bkg_px, max_bkg_px)), ('signal', (min_int_px, max_int_px))})
+        return self._bounds_cache
 
-    def update_refpoint(self):
+
+
+    def update_refpoint(self) -> None:
         if self.reference_method.currentText() == "Zero":
             self.reference_pts_label.setText('(x, y): (px, px)')
         else:
@@ -300,7 +310,7 @@ class Spectrometer_Interface(QMainWindow):
         self.load_calib()
         self.graph_setup()
 
-    def clear_graph(self):
+    def clear_graph(self) -> None:
         self.dnde_image.clear()
 
 

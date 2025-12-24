@@ -1,6 +1,7 @@
 import numpy as np
 import math as m
 
+
 def find_nearest(data, value):
     return (np.abs(data - value)).argmin()
 def find_indices(energy: np.ndarray, data_counts: np.ndarray, energy_bounds: list = None):

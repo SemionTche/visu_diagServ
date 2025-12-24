@@ -61,7 +61,7 @@ class DeconvolvedSpectrum:
         self.calibration = calibration
         self.spacing = spacing
         self.pC_per_count = pC_per_count
-        self._image_dimensions = image.shape
+        self.image_dimensions = image.shape
         self.offset_px = offset*pixel_per_mm
 
         self.set_axes()
@@ -72,26 +72,24 @@ class DeconvolvedSpectrum:
     def set_axes(self):
         # x-axis: energy
         if self.ref_mode == "Zero":
-            x_min = self.ref_point[0] + self.offset_px - self._image_dimensions[1]
+            x_min = self.ref_point[0] + self.offset_px - self.image_dimensions[1]
             x_max = self.ref_point[0] + self.offset_px
 
         elif self.ref_mode == "RefPoint":
             s_ref = np.interp(self.ref_point[1], self.calibration.energy, self.calibration.s, 
                                         right=np.nan, left=np.nan)
             x_min = int((s_ref - self.ref_point[0])*self.pixel_per_mm) + self.offset_px
-            x_max = x_min + self._image_dimensions[1]
+            x_max = x_min + self.image_dimensions[1]
 
         else:
             raise ValueError("referencing mode should be either 'zero' or 'refpoint'")
 
-        x_lanex = np.linspace(x_min, x_max, self._image_dimensions[1]) / self.pixel_per_mm
+        x_lanex = np.linspace(x_min, x_max, self.image_dimensions[1]) / self.pixel_per_mm
         # Filter axis with Yamask (Filter-out undefined s-values)
         x_lanex[x_lanex < min(self.calibration.s)] = np.nan
         x_lanex[x_lanex > max(self.calibration.s)] = np.nan
         self._energy_uneven = np.interp(x_lanex, np.flip(self.calibration.s), np.flip(self.calibration.energy),
                                         right=np.nan, left=np.nan)
-
-
 
         self._valid_yamask = ~np.isnan(x_lanex)  # take only not NaN elements
         self._energy_uneven = self._energy_uneven[self._valid_yamask]
@@ -102,8 +100,8 @@ class DeconvolvedSpectrum:
         self.energy = np.linspace(emin, emax, int((emax - emin) / self.spacing))
 
         # y-axis: angle
-        self.angle = np.linspace(-self._image_dimensions[0] / 2,
-                                 self._image_dimensions[0] / 2, self._image_dimensions[0]) * self.mrad_per_pix
+        self.angle = np.linspace(-self.image_dimensions[0] / 2,
+                                 self.image_dimensions[0] / 2, self.image_dimensions[0]) * self.mrad_per_pix
 
     def set_dsde(self):
         self.dsdE = np.interp(self.energy, self.calibration.energy, self.calibration.dsde,

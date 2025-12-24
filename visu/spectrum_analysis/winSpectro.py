@@ -72,6 +72,7 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
                                                                     self.refpoint_y_or_s.value()),
                                                                    self.pC_per_count_ctl.value(),
                                                                    offset=self.lanex_offset_mm_ctl.value())
+        self.image_dimensions = self.deconvolved_spectrum.image_dimensions
 
     def graph_setup(self):
 
@@ -113,7 +114,8 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
         self.image_histogram.setImage(self.deconvolved_spectrum.image.T, autoLevels=True, autoDownsample=True)
 
         # Integrate over angle and show graph
-        self.deconvolved_spectrum.integrate_spectrum((600, 670), (750, 850))
+        self.deconvolved_spectrum.integrate_spectrum(self.integration_bounds_dict()['signal'],
+                                                     self.integration_bounds_dict()['bkg'])
         self.dnde_image.plot(self.deconvolved_spectrum.energy, self.deconvolved_spectrum.integrated_spectrum)
 
     def spectro_dict(self, temp_dataArray):
@@ -123,9 +125,10 @@ class WINSPECTRO(Build_Interface.Spectrometer_Interface):
                                                               temp_dataArray[1],
                                                               energy_bounds=[self.min_cutoff_energy_ctl.value(),
                                                                              self.max_cutoff_energy_ctl.value()])
+        # Display values on interface
         self.mean_energy_ind.setValue(self.spectro_data_dict['Mean energy'])
         self.stdev_energy_ind.setValue(self.spectro_data_dict['Std energy'])
-        self.signalSpectroDict.emit(self.spectro_data_dict) # Signal for DiagServ
+        self.signalSpectroDict.emit(self.spectro_data_dict)  # Signal for DiagServ
 
 
 if __name__ == "__main__":
