@@ -18,6 +18,7 @@ import pathlib
 
 sepa = os.sep
 
+
 class Spectrometer_Interface(QMainWindow):
 
     def __init__(self):
