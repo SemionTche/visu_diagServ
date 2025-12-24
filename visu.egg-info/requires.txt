@@ -1,9 +1,0 @@
-matplotlib
-PyQt6-sip==13.5.2
-PyQt6-qt6==6.5.1
-PyQt6==6.5.1
-qdarkstyle
-pyqtgraph
-scipy
-six
-zmq
