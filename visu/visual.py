@@ -338,6 +338,7 @@ class SEE(QMainWindow):
             device = DEVICE_CAMERA,
             data = {}
         )
+        self.server_controller = ServerController()
         self.serv.start() # start the server thread
 
         self.shortcut()
