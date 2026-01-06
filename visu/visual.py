@@ -60,7 +60,10 @@ from visu.spectrum_analysis.winSpectro import WINSPECTRO
 
 import pathlib
 import visu
-from visu.diagServer import diagServer
+from server_lhc.protocol import DEVICE_CAMERA
+from server_lhc.serverLHC import ServerLHC
+from server_lhc.serverController import ServerController
+# from visu.diagServer import diagServer
 
 __version__ = visu.__version__
 __author__ = visu.__author__
@@ -327,7 +330,14 @@ class SEE(QMainWindow):
         self.yminR = 0
         self.ymaxR = self.dimy
 
-        self.serv = diagServer(parent=self, data={"state":"starting..."}) # init the server
+        # self.serv = diagServer(parent=self, data={"state":"starting..."}) # init the server
+        self.serv = ServerLHC(
+            name = "Spectro 1",
+            address = "tcp://*:7894",
+            freedom = 0,
+            device = DEVICE_CAMERA,
+            data = {}
+        )
         self.serv.start() # start the server thread
 
         self.shortcut()
