@@ -1838,7 +1838,7 @@ class SEE(QMainWindow):
             "data":self.winSpectro.data_dict,
             "name":"spectrum"
         }
-        self.serv.setData(data)
+        self.serv.set_data(data)
 
     def roiChanged(self):
 
