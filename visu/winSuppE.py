@@ -141,8 +141,8 @@ class WINENCERCLED(QWidget):
         vbox1.addLayout(hbox0)
         
         # initial laser values
-        init_energy_mJ = float(self.conf.value(self.name + "/init_energy_mJ"))
-        init_duration_fs = float(self.conf.value(self.name + "/init_duration_fs"))
+        init_energy_mJ = 60 # float(self.conf.value(self.name + "/init_energy_mJ"))
+        init_duration_fs = 28 # float(self.conf.value(self.name + "/init_duration_fs"))
         init_peak_power_TW = init_energy_mJ / init_duration_fs
         # laser energy - label and box
         energyLabel = QLabel ('Energy (mJ)')
@@ -183,15 +183,15 @@ class WINENCERCLED(QWidget):
         if self.parent is None : 
             pixelX = pixelY = 1. # px / um
         else :
-            pixelX = self.parent.winPref.stepX # px / um
+            pixelX = self.parent.winPref.stepX # um / px
             pixelY = self.parent.winPref.stepY
         # calibration
-        self.calibrationXLabel = QLabel("calibration X (px / um)")
+        self.calibrationXLabel = QLabel("calibration X (um / px)")
         self.calibrationX = QDoubleSpinBox() # for the value
         self.calibrationX.setValue(pixelX)
         self.calibrationX.setMinimum(0.1)
         self.calibrationX.setSingleStep(0.01)
-        self.calibrationYLabel = QLabel("calibration Y (px / um)")
+        self.calibrationYLabel = QLabel("calibration Y (um / px)")
         self.calibrationY = QDoubleSpinBox() # for the value
         self.calibrationY.setValue(pixelY)
         self.calibrationY.setMinimum(0.1)
@@ -455,10 +455,10 @@ class WINENCERCLED(QWidget):
     def energSouris(self):  # changement des rayons à la souris 
         sizeX, sizeY = self.circle.size()
         radiusX, radiusY = sizeX/2, sizeY/2
-        pixelX = self.calibrationX.value()
+        pixelX = self.calibrationX.value() # um / px
         pixelY = self.calibrationY.value()
         pixel = np.mean([pixelX, pixelY])
-        radius = np.mean([radiusX, radiusY]) / pixel # um
+        radius = np.mean([radiusX, radiusY]) * pixel # um
         self.radiusCircle.setValue(radius)
         
         if self.checkBoxAuto.isChecked() is False:
@@ -491,7 +491,7 @@ class WINENCERCLED(QWidget):
             pixelX = self.calibrationX.value()
             pixelY = self.calibrationY.value()
             pixel = np.mean([pixelX, pixelY])
-            radius = self.radiusCircle.value() * pixel # radius in px
+            radius = self.radiusCircle.value() / pixel # radius in px
             self.circle.setSize([2 * radius, 2 * radius])
             
             self.circle.setPos([self.xec - radius, 
@@ -527,8 +527,8 @@ class WINENCERCLED(QWidget):
             # self.r1y = self.r1y
                 # get calibration value
         
-        pixelX = self.calibrationX.value() # px / um
-        pixelY = self.calibrationY.value() # px / um
+        pixelX = 1 / self.calibrationX.value() # px / um
+        pixelY = 1 / self.calibrationY.value() # px / um
         
         if self.fwhmX is not None :
             self.textX.setText('fwhm='+f"{self.fwhmX / pixelX:.2f}")
@@ -668,10 +668,10 @@ class WINENCERCLED(QWidget):
         # affichage de fwhm sur les coupes X et Y que si le max est > 15 counts
         xCXmax = np.amax(coupeXnorm)  # max
         # if xCXmax > 15:
-        pixelY = self.calibrationY.value()
+        pixelY = self.calibrationY.value()  # um / px
         self.fwhmY = self.computeFWHM(yyy, coupeXnorm, order=3)
         if self.fwhmY is not None:
-            self.sizeYFWHM.setText(f"{self.fwhmY / pixelY:.2f}")
+            self.sizeYFWHM.setText(f"{self.fwhmY * pixelY:.2f}")
         else:
             self.sizeYFWHM.setText(f"{self.fwhmY}")
         yCXmax = yyy[coupeXnorm.argmax()]
@@ -679,10 +679,10 @@ class WINENCERCLED(QWidget):
             
         yCYmax = np.amax(coupeYnorm)  # max
         # if yCYmax > 15:
-        pixelX = self.calibrationX.value()
+        pixelX = self.calibrationX.value() # um / px
         self.fwhmX = self.computeFWHM(xxx, coupeYnorm, order=3)
         if self.fwhmX is not None:
-            self.sizeXFWHM.setText(f"{self.fwhmX / pixelX:.2f}")
+            self.sizeXFWHM.setText(f"{self.fwhmX * pixelX:.2f}")
         else:
             self.sizeXFWHM.setText(f"{self.fwhmX}")
         xCYmax = xxx[coupeYnorm.argmax()]            
