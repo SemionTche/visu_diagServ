@@ -60,9 +60,9 @@ from visu.spectrum_analysis.winSpectro import WINSPECTRO
 
 import pathlib
 import visu
-from server_lhc.protocol import DEVICE_CAMERA
-from server_lhc.serverLHC import ServerLHC
-from server_lhc.serverController import ServerController
+from laplace_server.server_lhc import ServerLHC
+from laplace_server.protocol import DEVICE_CAMERA
+from laplace_server.server_controller import ServerController
 # from visu.diagServer import diagServer
 
 __version__ = visu.__version__
@@ -242,6 +242,8 @@ class SEE(QMainWindow):
         
         if self.spectro is True:
             self.winSpectro = WINSPECTRO(parent=self,conf=self.conf)
+        else:
+            self.winSpectro = None
 
         if self.encercled is True:
             self.winEncercled = WINENCERCLED(parent=self, conf=self.conf,
@@ -331,13 +333,27 @@ class SEE(QMainWindow):
         self.ymaxR = self.dimy
 
         # self.serv = diagServer(parent=self, data={"state":"starting..."}) # init the server
-        self.serv = ServerLHC(
-            name = "Spectro 1",
-            address = "tcp://*:7894",
-            freedom = 0,
-            device = DEVICE_CAMERA,
-            data = {}
-        )
+        try: 
+            self.serv = ServerLHC(
+                name = "Spectro 1",
+                address = "tcp://*:0089",
+                freedom = 0,
+                device = DEVICE_CAMERA,
+                data = {}
+            )
+        except Exception as e:
+            print(f'Exception : {e}')
+            try: 
+                self.serv = ServerLHC(
+                name = "Spectro 2",
+                address = "tcp://*:0090",
+                freedom = 0,
+                device = DEVICE_CAMERA,
+                data = {}
+            )
+            except Exception as e: 
+                print(f'Exception : {e}')
+            
         self.server_controller = ServerController()
         self.serv.start() # start the server thread
 
@@ -1832,13 +1848,14 @@ class SEE(QMainWindow):
         pass
 
     def updateServer(self):
-        data = {
-            "state": "running", 
-            "shotNumber":0, 
-            "data":self.winSpectro.data_dict,
-            "name":"spectrum"
-        }
-        self.serv.set_data(data)
+        if self.winSpectro:
+            data = {
+                "state": "running", 
+                "shotNumber":0, 
+                "data":self.winSpectro.data_dict,
+                "name":"spectrum"
+            }
+            self.serv.set_data(data)
 
     def roiChanged(self):
 
