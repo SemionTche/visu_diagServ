@@ -71,7 +71,7 @@ class PREFERENCES(QWidget):
         self.checkBoxAxeScale.setChecked(False)
         hbox6.addWidget(self.checkBoxAxeScale)
         
-        self.checkBoxStepX = QLabel('X axe (Pixel/um) : ')
+        self.checkBoxStepX = QLabel('X axe (um/Pixel) : ')
         self.stepXBox = QDoubleSpinBox()
         self.stepXBox.setMaximum(10000)
         self.stepXBox.setValue(self.stepX)
@@ -79,7 +79,7 @@ class PREFERENCES(QWidget):
         hbox6.addWidget(self.checkBoxStepX)
         hbox6.addWidget(self.stepXBox)
         
-        self.checkBoxStepY = QLabel('Y axe (Pixel/um) : ')
+        self.checkBoxStepY = QLabel('Y axe (um/Pixel) : ')
         self.stepYBox = QDoubleSpinBox()
         self.stepYBox.setMaximum(10000)
         self.stepYBox.setValue(self.stepY)
